@@ -1,0 +1,66 @@
+name: Bot offres + publication
+
+on:
+  schedule:
+    - cron: "17 * * * *"      # toutes les heures (heure UTC)
+  workflow_dispatch:           # bouton « Run workflow » pour le lancer à la main
+  push:
+    branches: [main]
+    paths-ignore: ["offres.js"]
+
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4                     # le site (branche main)
+      - uses: actions/checkout@v4                     # la mémoire du bot (branche bot-data)
+        with:
+          ref: bot-data
+          path: state
+      - uses: astral-sh/setup-uv@v5
+      - name: Lancer le bot
+        working-directory: bot
+        env:
+          IMAP_HOST: ${{ secrets.IMAP_HOST }}
+          IMAP_USER: ${{ secrets.IMAP_USER }}
+          IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+          IMAP_FOLDER: ${{ secrets.IMAP_FOLDER }}
+          LBA_API_KEY: ${{ secrets.LBA_API_KEY }}
+        run: |
+          ln -s "$GITHUB_WORKSPACE/state" data          # le bot lit/écrit sa base dans data/
+          uv sync --frozen --no-dev -q
+          uv run jobbot
+      - name: Sauvegarder la mémoire du bot
+        run: |
+          cd state
+          git add -A
+          if ! git diff --cached --quiet; then
+            git -c user.name=jobbot -c user.email=jobbot@users.noreply.github.com commit -qm "Mémoire du bot $(date -u +%F\ %H:%M)"
+            git push -q
+          fi
+      - name: Préparer le site
+        run: |
+          mkdir public
+          cp index.html style.css theme.css app.js bot.svg offres.js public/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: bot
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

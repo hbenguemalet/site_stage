@@ -1,0 +1,68 @@
+# Profils de recherche : un bloc par personne. Ajouter un profil = ajouter un bloc
+# + créer ses alertes e-mail sur la boîte dédiée. Aucun secret ici : `webhook` est
+# le NOM d'une variable de .env, pas l'URL.
+#
+# Champs :
+#   id            identifiant court (sert dans la base et pour --profil)
+#   nom           nom affiché sur Discord
+#   description   ce que la personne cherche (texte libre, pour les humains)
+#   actif         false = profil ignoré
+#   villes        clés de la section `villes` de config.yaml
+#   contrats      parmi : cdi, cdd, stage, alternance, freelance, interim
+#   contrat_inconnu  garder | rejeter (quand ni la source ni le titre ne le disent)
+#   inclure       regex (insensibles à la casse) ; il en faut au moins une qui matche
+#   exclure       regex ; une seule qui matche suffit à rejeter
+#   exclure_entreprises  regex testées sur le nom de l'entreprise
+#   etoile        regex ; si une matche, l'offre est marquée ⭐
+#   bonus         « regex: points » ajoutés au score (titre, description ou entreprise) ; négatif possible
+#   score_min     0–100 : offres sous ce score rejetées (0 par défaut : on ne rejette rien)
+#   recap_a_partir_de  au-delà de N offres dans un passage : un récapitulatif au lieu de N messages
+#                 (sinon réglage global notifications.recap_a_partir_de de config.yaml)
+#   webhook       nom de la variable .env du salon Discord du profil
+#   avatar        (optionnel) URL https d'une image carrée (PNG, 256×256) : avatar des messages
+#                 du profil ; images dans le dossier statique du VPS → https://louishanquiez.fr/jobbot/
+#
+# Score (0–100) : base 40, +20 mot-clé dans le titre, +5 par autre mot-clé (max +15),
+# +15 si ⭐, + bonus du profil, -10 si contrat inconnu. Affiché sur Discord et en --dry-run.
+
+profils:
+  - id: stage-design
+    nom: "Stage DN MADE"
+    description: >
+      Stage en design, graphisme, mode, textile, espace, objet, édition, direction artistique,
+      médiation et métiers de la culture, en France et en Europe.
+    actif: true
+    villes: [lille, paris, europe]
+    contrats: [stage]
+    contrat_inconnu: rejeter
+    inclure:
+      - 'design|\bdesigner|\bdesigneu'           # design, designer, designeuse (tous domaines)
+      - 'graphi|\bgraphiste|direction artistique|art direct|\bda\b|\bpao\b|maquett'
+      - 'illustrat|motion|animation 2d|\bux\b|\bui\b|packaging|brand(ing)?\b|identit[ée] visuelle|visual identity'
+      - 'mode\b|fashion|textile|stylis|styliste|mati[èe]re|tissu|maille|patronn|mod[ée]lis|coloriste|couture|accessoire|maroquin|bijou|joaill'
+      - 'c[ée]ramique|verre\b|glass|mobilier|furniture|objet|scénograph|scenograph|d[ée]cor|architecture d.int[ée]rieur|design d.espace|visual merchandising|merchandising visuel'
+      - 'cr[ée]atif|creative|artistique|artist|cr[ée]ation\b'
+      - '[ée]dition|[ée]ditorial|editorial|journalis|r[ée]dact|r[ée]dacteur|copywrit|curat|commissaire|m[ée]diation|exposition|exhibition|patrimoine|mus[ée]e|museum|galerie|gallery'
+      - 'photograph|vid[ée]o|image\b|culture|culturel|cultural'
+    fiche:
+      - 'direction artistique|art direction|graphisme|graphic design|design d.espace|design produit|product design|textile|stylisme|fashion design'
+      - '[ée]dition|editorial|exposition|m[ée]diation culturelle|patrimoine|scénographie'
+    alertes_fiche:
+      - 'design|graphi|mode|textile|culture|[ée]dition|artistique|cr[ée]atif'
+    exclure_titre:
+      - 'd[ée]veloppeu|developer|software|\bdev\b|devops|backend|back-end|front-end|frontend|full ?stack|\bsre\b|\bqa\b|\btest(eur|er)\b'
+      - 'data (engineer|analyst|scien)|machine learning|\bml\b|\bia\b|\bai\b|cybers[ée]curit|cloud|r[ée]seau|syst[èe]mes?'
+      - 'compta|comptab|\bfinanc|contr[ôo]le de gestion|\baudit|\bpaie\b|tr[ée]sorerie|fiscal|\brh\b|ressources? humaines?|recrut|talent acquisition'
+      - 'juridique|juriste|\bdpo\b|compliance|logisti|supply|\bachats?\b|approvisionn|\bsales\b|business develop|commercial'
+    exclure:
+      - 'ing[ée]nieur(e)? (en )?(logiciel|d[ée]veloppement)'
+    exclure_entreprises:                 # écoles et plateformes de recrutement
+      - '[ée]cole|\bschool\b|\bcfa\b|\bformations?\b|\bacad[ée]m|universit[ée] de'
+      - '\biscod\b|openclassrooms|\bifocop\b|\bsimplon\b|\bwild code\b|\bmydigitalschool\b|\bsup de\b'
+      - '^stages?$'
+    etoile:
+      - 'design|graphi|direction artistique|textile|mode\b|fashion|[ée]dition|mus[ée]e|culture'
+    bonus:
+      'stage (de )?(design|graphi|mode|textile)|design graphique|direction artistique': 10
+      '\bdn made\b|dnmade|\bdsaa\b|\bensad|\bensci\b|arts d[ée]coratifs': 10
+    webhook: DISCORD_WEBHOOK_URL         # nom d'une variable ; inutile tant que notifications.discord est false
