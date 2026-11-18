@@ -87,7 +87,6 @@ carrieres:
     - {nom: Kiabi, ats: smartrecruiters, id: kiabi}               # Hem / Lille, mode et création
     - {nom: Exotec, ats: workable, id: exotec}                    # Croix, design produit
     # --- Paris : mode, luxe, mobilier, édition, culture ---
-    - {nom: Vestiaire Collective, ats: lever, id: vestiairecollective}
     - {nom: Back Market, ats: ashby, id: backmarket}
     - {nom: Believe, ats: smartrecruiters, id: believe}           # musique, direction artistique
     - {nom: Doctolib, ats: ashby, id: doctolib}                   # design produit / UX
@@ -99,18 +98,11 @@ carrieres:
     - {nom: BlaBlaCar, ats: lever, id: blablacar}
     - {nom: Brevo, ats: lever, id: brevo}
     - {nom: Contentsquare, ats: lever, id: contentsquare}
-    - {nom: Deezer, ats: lever, id: deezer}
     - {nom: Mirakl, ats: greenhouse, id: mirakl}
     - {nom: Algolia, ats: greenhouse, id: algolia}
     - {nom: Withings, ats: workable, id: withings}
     # --- Europe : design, mode, culture ---
     - {nom: Spotify, ats: lever, id: spotify}                     # Stockholm
-    - {nom: Zalando, ats: smartrecruiters, id: zalando}           # Berlin
-    - {nom: Bol.com, ats: smartrecruiters, id: bolcom}            # Pays-Bas
     - {nom: Typeform, ats: greenhouse, id: typeform}              # Barcelone
     - {nom: Miro, ats: greenhouse, id: realtimeboardglobal}
     - {nom: Adyen, ats: greenhouse, id: adyen}
-    - {nom: Bending Spoons, ats: greenhouse, id: bendingspoons}   # Milan
-    - {nom: Glovo, ats: greenhouse, id: glovo}                    # Barcelone
-    - {nom: Booking.com, ats: smartrecruiters, id: bookingcom}
-    - {nom: TheFork, ats: smartrecruiters, id: thefork}
