@@ -183,6 +183,12 @@
     var voir = el("a", "s-act s-act--voir", "Voir l'annonce ↗");
     voir.href = o.url; voir.target = "_blank"; voir.rel = "noopener";
     actions.appendChild(voir);
+    if (o.ville === "ailleurs" || /\b(intern(ship)?|trainee|praktik\w*|pr[aá]cticas|est[aá]gio|tirocinio|stagiair\w*|werkstudent|graphic|designer|assistant|manager)\b/i.test(o.titre)) {
+      var trad = el("a", "s-act s-act--voir", "Traduire en français");
+      trad.href = "https://translate.google.com/translate?sl=auto&tl=fr&u=" + encodeURIComponent(o.url);
+      trad.target = "_blank"; trad.rel = "noopener";
+      actions.appendChild(trad);
+    }
     if (s === "trier") {
       actions.appendChild(bouton("s-act--oui", "♥ Je garde", function () { changer(o, "interesse", "Rangée dans « Gardées »"); }));
       actions.appendChild(bouton("s-act--non", "✕", function () { changer(o, "ecarte", "Offre écartée"); }));
