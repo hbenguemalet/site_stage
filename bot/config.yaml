@@ -43,7 +43,7 @@ villes:
 
 sources:
   adzuna: false
-  email_alerts: false                  # true une fois IMAP_* ajoutés dans les secrets GitHub (boîte d'alertes dédiée)
+  email_alerts: true                   # true une fois IMAP_* ajoutés dans les secrets GitHub (boîte d'alertes dédiée)
   labonnealternance: false             # passer à true une fois LBA_API_KEY rempli dans .env
   carrieres: true                      # pages carrières (API publiques Greenhouse, Lever…), voir plus bas
 
