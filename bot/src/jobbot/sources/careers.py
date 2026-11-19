@@ -160,7 +160,12 @@ class Careers:
     def due(self) -> bool:
         if self.stamp is None or not self.stamp.exists():
             return True
-        return time.time() - self.stamp.stat().st_mtime >= self.every_min * 60 - 30
+        # L'heure est écrite dans le fichier : la date du fichier change à chaque checkout Git.
+        try:
+            dernier = float(self.stamp.read_text().strip())
+        except ValueError:
+            return True
+        return time.time() - dernier >= self.every_min * 60 - 30
 
     def fetch(self) -> list[Offer]:
         if not self.due():
@@ -181,5 +186,5 @@ class Careers:
             raise RuntimeError("toutes les pages carrières sont en échec")
         if self.stamp is not None:
             self.stamp.parent.mkdir(parents=True, exist_ok=True)
-            self.stamp.touch()
+            self.stamp.write_text(str(time.time()))
         return offers
