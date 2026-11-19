@@ -1,6 +1,6 @@
 /* Généré par le bot d'offres (profil stage-design) — ne pas modifier à la main. */
 window.STAGES = {
- "date": "2026-11-18",
+ "date": "2026-11-19",
  "meilleures": [
   {
    "titre": "Social Media & Creative Intern (x/f/m)",
@@ -18,7 +18,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-18T21:47:49+00:00",
+   "vu": "2026-11-19T17:10:58+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -37,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-18T21:47:49+00:00",
+   "vu": "2026-11-19T17:10:58+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -58,7 +58,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 40,
-   "vu": "2026-11-18T21:47:49+00:00",
+   "vu": "2026-11-19T17:10:58+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
