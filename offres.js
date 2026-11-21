@@ -3,6 +3,25 @@ window.STAGES = {
  "date": "2026-11-21",
  "meilleures": [
   {
+   "titre": "Stage - Graphiste de production (Jeux de Société & Loisirs Créatifs)",
+   "entreprise": "SAVANA",
+   "lieu": "Paris (75)",
+   "url": "https://fr.indeed.com/viewjob?jk=ef85c3e7c2d8eae3",
+   "etoile": true,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 80,
+   "vu": "2026-11-21T17:32:49+00:00",
+   "premiere": "2026-11-21T17:32:49+00:00"
+  },
+  {
    "titre": "Stagiaire graphiste H/F",
    "entreprise": "Le Fridge Comedy Club",
    "lieu": "Paris (75)",
@@ -18,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -37,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -56,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -75,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -94,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -113,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -153,7 +172,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -172,7 +191,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -191,7 +210,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -210,7 +229,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-21T09:53:48+00:00",
+   "vu": "2026-11-21T17:32:49+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   }
  ],
