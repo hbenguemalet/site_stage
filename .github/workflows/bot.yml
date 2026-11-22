@@ -45,7 +45,7 @@ jobs:
           git add -A
           if ! git diff --cached --quiet; then
             git -c user.name=jobbot -c user.email=jobbot@users.noreply.github.com commit -qm "Mémoire du bot $(date -u +%F\ %H:%M)"
-            git push -q
+            for i in 1 2 3; do git push -q && break; echo "push refusé (essai $i), nouvelle tentative"; sleep $((i*10)); git pull -q --rebase || true; done
           fi
       - name: Préparer le site
         run: |
