@@ -151,7 +151,6 @@
     var li = el("li", "s-offre" + (nouvelles[o.url] && s === "trier" ? " est-nouvelle" : ""));
     var tete = el("div", "s-tete");
     if (nouvelles[o.url]) tete.appendChild(el("span", "a-chip a-chip--good", "Nouveau"));
-    if (o.etoile) tete.appendChild(el("span", "a-chip a-chip--good", "★ Data"));
     tete.appendChild(el("span", "a-chip", { entreprise: "Entreprise", studio: "Studio · Agence", public: "Culture · Public" }[o.type]));
     if (o.salaire) tete.appendChild(el("span", "a-chip", o.salaire));
     if (o.note) tete.appendChild(el("span", "a-chip a-chip--warn", o.note));
@@ -288,7 +287,6 @@
     });
   }
   groupe("ville"); groupe("type");
-  $("f-rse").addEventListener("click", function () { filtre.rse = !filtre.rse; this.setAttribute("aria-pressed", filtre.rse); afficher(); });
   $("s-cherche").addEventListener("input", function (e) { filtre.q = e.target.value; afficher(); });
   $("s-plus-btn").addEventListener("click", function () { voirTout = true; afficher(); });
 
