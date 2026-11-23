@@ -3,6 +3,25 @@ window.STAGES = {
  "date": "2026-11-23",
  "meilleures": [
   {
+   "titre": "Stage - Graphisme / Graphic designer / Graphiste",
+   "entreprise": "Mangoo Pickle Asbl",
+   "lieu": "Bruxelles",
+   "url": "https://fr.indeed.com/viewjob?jk=026ebc571a0a49b5",
+   "etoile": true,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 80,
+   "vu": "2026-11-23T21:25:27+00:00",
+   "premiere": "2026-11-23T21:25:27+00:00"
+  },
+  {
    "titre": "Stagiaire designer ux-ui - télétravail",
    "entreprise": "Safe",
    "lieu": "Paris (75)",
@@ -18,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -37,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -56,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -75,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -94,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -113,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,7 +151,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -151,7 +170,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -176,6 +195,25 @@ window.STAGES = {
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
+   "titre": "Stage assistant administratif H/F",
+   "entreprise": "Axeo Services Lille Nord",
+   "lieu": "Lille (59)",
+   "url": "https://fr.indeed.com/viewjob?jk=2dd360baee9ed855",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 30,
+   "vu": "2026-11-23T21:25:27+00:00",
+   "premiere": "2026-11-23T21:25:27+00:00"
+  },
+  {
    "titre": "Stage — Assistant(e) E-commerce & Webmarketing (H/F)",
    "entreprise": "VALEGE LINGERIE",
    "lieu": "Levallois-Perret (92)",
@@ -191,7 +229,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -210,7 +248,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -229,7 +267,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -248,7 +286,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -267,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-23T14:40:03+00:00",
+   "vu": "2026-11-23T21:25:27+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   }
  ],
