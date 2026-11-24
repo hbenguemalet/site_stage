@@ -18,7 +18,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -37,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -56,8 +56,27 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
+  },
+  {
+   "titre": "Stagiaire en graphisme (H/F/X)",
+   "entreprise": "Maison des Cultures de Saint-Gilles",
+   "lieu": "Bruxelles Saint-Gilles",
+   "url": "https://fr.indeed.com/viewjob?jk=a2ae91f762281915",
+   "etoile": true,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 75,
+   "vu": "2026-11-24T17:45:07+00:00",
+   "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
    "titre": "Stagiaire graphiste H/F",
@@ -75,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -94,8 +113,27 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
+  },
+  {
+   "titre": "Stage – Communication, Marketing digital et Création de contenu (H/F)",
+   "entreprise": "Dépan.Pro",
+   "lieu": "Paris 13e (75)",
+   "url": "https://fr.indeed.com/viewjob?jk=2b7db19053690657",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 60,
+   "vu": "2026-11-24T17:45:07+00:00",
+   "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
    "titre": "Stage montage vidéo (H/F) – Télétravail majoritaire",
@@ -113,7 +151,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,7 +170,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -151,7 +189,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -170,7 +208,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -210,7 +248,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -229,7 +267,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -248,7 +286,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -267,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -286,7 +324,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -305,7 +343,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T06:03:56+00:00",
+   "vu": "2026-11-24T17:45:07+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   }
  ],
