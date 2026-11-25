@@ -85,6 +85,7 @@ var SITE = {
   var prefs = memo.prefs;
   if (!prefs.objectif) prefs.objectif = SITE.objectifDefaut;
   if (!prefs.tri) prefs.tri = "pertinence";
+  if (SITE.compat && !prefs.triCompat) { prefs.tri = "compat"; prefs.triCompat = 1; }   // une fois : la note devient le tri par défaut
 
   // ---------- les offres ----------
   var NOMS_VILLES = {};
@@ -103,7 +104,7 @@ var SITE = {
 
   // Une fiche courte de chaque offre suivie est gardée : quand le bot retire une
   // annonce de sa liste, la candidature reste visible (avec « Plus en ligne »).
-  var CHAMPS_FICHE = ["titre", "entreprise", "lieu", "url", "contrat", "salaire", "site", "etoile", "infos", "premiere"];
+  var CHAMPS_FICHE = ["titre", "entreprise", "lieu", "url", "contrat", "salaire", "site", "etoile", "infos", "premiere", "signaux", "outils"];
   function ficher(o) {
     var f = {}; CHAMPS_FICHE.forEach(function (k) { if (o[k] != null) f[k] = o[k]; });
     memo.fiches[o.url] = f;
@@ -139,6 +140,131 @@ var SITE = {
   var curseur = -1; // carte choisie au clavier
 
   function info(o) { return memo.statuts[o.url] || {}; }
+
+  // ---------- compétences demandées vs avancée du bootcamp ----------
+  var BOOT = null;
+  var OUTILS_TITRE = [["SQL", /\bsql\b/i], ["Python", /python/i], ["Power BI", /power ?bi/i], ["Excel", /excel/i], ["DAX", /\bdax\b/i],
+    ["dbt", /\bdbt\b/i], ["Docker", /docker/i], ["Airflow", /airflow/i], ["BigQuery", /bigquery/i], ["ETL", /\betl\b/i],
+    ["Tableau", /tableau software/i], ["Snowflake", /snowflake/i], ["Spark", /\bspark\b/i], ["Databricks", /databricks/i]];
+  function outilsOffre(o) {
+    if (o.outils) return o.outils;
+    return OUTILS_TITRE.filter(function (x) { return x[1].test(o.titre || ""); }).map(function (x) { return x[0]; });
+  }
+  // état d'un outil : acquis / en cours / à venir / hors (pas au programme du bootcamp)
+  function etatOutil(nom) {
+    var c = SITE.bootcamp && SITE.bootcamp.outils[nom];
+    if (c === "acquis") return { etat: "acquis", pct: 100 };
+    if (!c) return { etat: "hors", pct: 0 };
+    var comp = BOOT && BOOT.competences.filter(function (x) { return x.nom === c; })[0];
+    if (!comp) return { etat: "à venir", pct: 0, comp: c };
+    return { etat: comp.etat === "fait" ? "acquis" : comp.etat, pct: comp.pct, comp: c };
+  }
+  // ---------- note de compatibilité /10 ----------
+  var MOIS_NUM = { janvier: 1, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, aout: 8, septembre: 9, octobre: 10, novembre: 11, decembre: 12,
+    january: 1, february: 2, march: 3, april: 4, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12 };
+  var NOMS_MOIS = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  var RX_MOIS = /(janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre|january|february|march|april|may|june|july|august|september|october|november|december)\s*(20\d\d)/;
+  function debutOffre(o) {
+    var txt = norm((o.infos || []).filter(function (x) { return /^D[ée]but/.test(x); }).join(" ") + " " + (o.titre || ""));
+    var m = txt.match(RX_MOIS);
+    if (m) return { mois: MOIS_NUM[m[1]] || 5, an: +m[2] };
+    if ((m = txt.match(/rentree\s*(20\d\d)/))) return { mois: 9, an: +m[1] };
+    if ((m = txt.match(/debut\s*:\s*(20\d\d)/))) return { mois: 0, an: +m[1] };
+    return null;
+  }
+  // signaux que le bot publie ; secours simple si la page est plus récente que offres.js
+  function signauxOffre(o) {
+    if (o.signaux) return o.signaux;
+    var c = String(o.contrat || "").toLowerCase();
+    return { contrat: /alternan|apprenti/.test(c + " " + norm(o.titre)) ? "alternance" : /cdd/.test(c) ? "cdd" : "cdi", role: "data",
+      niveau: /senior|confirm|lead|manager|exp[ée]riment/i.test(o.titre || "") ? "senior" : "", domaines: [] };
+  }
+  function fmtNote(n) { return n.toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: 1 }); }
+  var MAITRISE = { acquis: 1, "en cours": 0.5, "à venir": 0.12, hors: 0 };
+  function evaluerCompat(o) {
+    var C = SITE.compat; if (!C) return null;
+    var sg = signauxOffre(o), r = [], pts = 0, plafond = 10, plafondRaison = "";
+    function raison(signe, t) { r.push({ s: signe, t: t }); }
+
+    // contrat (3)
+    var alt = sg.contrat === "alternance";
+    if (alt) { pts += 3; raison(1, "Alternance : c'est ce que tu cherches"); }
+    else if (sg.contrat === "inconnu") { pts += 1.5; raison(0, "Type de contrat non précisé"); }
+    else {
+      pts += 0.4; plafond = C.plafondHorsAlternance;
+      plafondRaison = (sg.contrat || "cdi").toUpperCase() + " : tu cherches une alternance (plafonné à " + C.plafondHorsAlternance + "/10)";
+      raison(-1, (sg.contrat === "stage" ? "Stage" : sg.contrat.toUpperCase()) + " : pas une alternance");
+    }
+    // poste (3)
+    var rp = C.roles[sg.role] != null ? C.roles[sg.role] : 0.3;
+    pts += rp;
+    if (rp >= 2.5) raison(1, C.roleNoms[sg.role] + " : ton objectif");
+    else if (rp >= 1.2) raison(0, C.roleNoms[sg.role] + " : proche de ton objectif");
+    else {
+      raison(-1, C.roleNoms[sg.role] + " : éloigné de ton objectif");
+      if (rp < 0.5 && C.plafondHorsData < plafond) { plafond = C.plafondHorsData; plafondRaison = plafondRaison || "Poste hors data (plafonné à " + C.plafondHorsData + "/10)"; }
+    }
+    // niveau (1)
+    if (sg.niveau === "senior") {
+      pts += 0; plafond = Math.min(plafond, C.plafondSenior);
+      raison(-1, "Poste confirmé / senior" + (sg.annees ? " (" + sg.annees + " ans d'expérience demandés)" : ""));
+      plafondRaison = plafondRaison || "Poste senior (plafonné à " + C.plafondSenior + "/10)";
+    } else if (sg.niveau === "junior" || alt) { pts += 1; raison(1, "Accessible à un profil junior"); }
+    else { pts += 0.6; raison(0, "Niveau d'expérience non précisé"); }
+    // outils (2) : maîtrise actuelle (Excel…) + avancée du bootcamp
+    var outils = outilsOffre(o);
+    if (outils.length) {
+      var tot = 0, ok = [], cours = [], non = [];
+      outils.forEach(function (n) {
+        var e = etatOutil(n);
+        tot += e.etat === "en cours" ? 0.45 + 0.4 * (e.pct / 100) : MAITRISE[e.etat];
+        (e.etat === "acquis" ? ok : e.etat === "en cours" ? cours : non).push(n);
+      });
+      pts += 2 * tot / outils.length;
+      if (ok.length) raison(1, "Tu maîtrises : " + ok.join(", "));
+      if (cours.length) raison(0, "Bootcamp en cours : " + cours.join(", "));
+      if (non.length) raison(-1, "Pas encore vu : " + non.join(", "));
+    } else { pts += 0.9; raison(0, "Outils non précisés dans l'annonce"); }
+    // lieu (1)
+    var lv = o.ville === "lille" ? "lille" : o.ville === "paris" ? "paris" : "autre";
+    pts += C.lieux[lv];
+    raison(lv === "lille" ? 1 : lv === "paris" ? 0 : -1, lv === "lille" ? "Métropole lilloise : à côté de chez toi" : lv === "paris" ? "Paris : déménagement à prévoir" : "Lieu éloigné");
+    // début
+    var d = debutOffre(o);
+    if (d && C.debutCible) {
+      var ecart = (d.an * 12 + (d.mois || C.debutCible.mois)) - (C.debutCible.an * 12 + C.debutCible.mois);
+      var quand = (d.mois ? NOMS_MOIS[d.mois] + " " : "") + d.an;
+      if (ecart < -2) { pts -= 2; raison(-1, "Début en " + quand + " : trop tôt pour ta rentrée de " + NOMS_MOIS[C.debutCible.mois] + " " + C.debutCible.an); }
+      else if (ecart <= 2) { pts += 0.5; raison(1, "Début en " + quand + " : ça colle avec ta rentrée"); }
+      else { pts -= 0.5; raison(-1, "Début en " + quand + " : plus tard que ta rentrée"); }
+    }
+    // domaine
+    var proche = (sg.domaines || []).filter(function (x) { return C.domainesProches.indexOf(x) >= 0; });
+    if (proche.length) { pts += 0.5; raison(1, "Domaine proche de ton expérience (" + proche.join(", ") + ")"); }
+
+    var brute = Math.max(0, Math.min(10, pts));
+    var note = Math.round(Math.min(brute, plafond) * 2) / 2;
+    if (plafondRaison && brute > plafond) raison(-1, plafondRaison);
+    var bande = note >= 8 ? "top" : note >= 6.5 ? "bon" : note >= C.seuil ? "moyen" : "bas";
+    return { note: note, brute: brute, bande: bande, raisons: r };
+  }
+  function compat(o) { return o._c || (o._c = evaluerCompat(o)); }
+  function compatibilite(o) { var c = compat(o); return c ? c.note : 0; }
+  function compatFine(o) { var c = compat(o); return c ? c.note + c.brute / 100 : 0; }   // départage les offres plafonnées
+  function blocCompetences(o) {
+    var l = outilsOffre(o);
+    if (!SITE.bootcamp || !l.length) return null;
+    var p = el("p", "s-skills");
+    p.appendChild(el("span", "s-skills-titre", "Demandé :"));
+    var noms = { acquis: "acquis", "en cours": "en cours", "à venir": "à venir", hors: "hors bootcamp" };
+    l.forEach(function (n) {
+      var e = etatOutil(n);
+      var c = el("span", "s-sk s-sk--" + (e.etat === "en cours" ? "cours" : e.etat === "à venir" ? "venir" : e.etat), n);
+      c.title = n + " : " + noms[e.etat] + (e.etat === "en cours" ? " (" + e.pct + " % de « " + e.comp + " » dans le bootcamp)" : "");
+      p.appendChild(c);
+    });
+    return p;
+  }
   function statut(o) { return info(o).s || "trier"; }
   function aRelancer(o) {
     var i = info(o);
@@ -367,6 +493,22 @@ var SITE = {
     var ag = age(o);
     if (ag && s === "trier") tete.appendChild(el("span", "s-age", "repérée " + ag));
     if (memo.vues[o.url]) tete.appendChild(el("span", "s-vue", "● déjà ouverte"));
+    var cp = compat(o), pq = null;
+    if (cp) {
+      var badge = el("button", "s-compat s-compat--" + cp.bande); badge.type = "button";
+      badge.style.setProperty("--p", cp.note * 10);
+      badge.appendChild(el("b", null, fmtNote(cp.note))); badge.appendChild(el("small", null, "/10"));
+      badge.setAttribute("aria-label", "Compatibilité avec ton profil : " + fmtNote(cp.note) + " sur 10. Voir pourquoi.");
+      badge.setAttribute("aria-expanded", "false");
+      badge.title = "Compatibilité avec ton profil";
+      tete.appendChild(badge);
+      pq = el("div", "s-pq"); pq.hidden = true;
+      pq.appendChild(el("p", "s-pq-t", "Pourquoi " + fmtNote(cp.note) + " / 10 ?"));
+      var ul = el("ul");
+      cp.raisons.forEach(function (x) { ul.appendChild(el("li", "s-pq--" + (x.s > 0 ? "ok" : x.s < 0 ? "non" : "mid"), x.t)); });
+      pq.appendChild(ul);
+      badge.addEventListener("click", function () { pq.hidden = !pq.hidden; badge.setAttribute("aria-expanded", String(!pq.hidden)); });
+    }
     li.appendChild(tete);
 
     var bloc = el("div");
@@ -384,7 +526,10 @@ var SITE = {
       });
       bloc.appendChild(inf);
     }
+    var comp = blocCompetences(o);
+    if (comp) bloc.appendChild(comp);
     li.appendChild(bloc);
+    if (pq) li.appendChild(pq);
 
     if (s === "postule") li.appendChild(blocSuivi(o, li));
     if (s === "interesse" || s === "postule") li.appendChild(blocVerif(o));
@@ -510,6 +655,7 @@ var SITE = {
       liste.sort(function (a, b) {
         if (t === "recentes") return String(b.premiere || "").localeCompare(String(a.premiere || "")) || (b.score || 0) - (a.score || 0);
         if (t === "entreprise") return norm(a.entreprise).localeCompare(norm(b.entreprise));
+        if (t === "compat") return compatFine(b) - compatFine(a) || (b.score || 0) - (a.score || 0) || String(b.premiere || "").localeCompare(String(a.premiere || ""));
         return (nouvelles[b.url] ? 1 : 0) - (nouvelles[a.url] ? 1 : 0) || (b.proche ? 1 : 0) - (a.proche ? 1 : 0) || (b.score || 0) - (a.score || 0);
       });
     } else {
@@ -531,9 +677,14 @@ var SITE = {
     var liste = trier(offres.filter(function (o) { return statut(o) === vue && passeFiltres(o); }));
     var cachees = 0;
     if (vue === "trier" && !voirTout && !filtre.q) {
-      var visibles = liste.filter(function (o) { return o.proche || nouvelles[o.url]; });
+      var visibles = SITE.compat
+        ? liste.filter(function (o) { return compatibilite(o) >= SITE.compat.seuil; })
+        : liste.filter(function (o) { return o.proche || nouvelles[o.url]; });
       cachees = liste.length - visibles.length;
       liste = visibles;
+      if (SITE.compat) {
+        $("s-plus-txt").textContent = "Ces offres collent moins à ton profil (CDI, poste confirmé, début trop tôt, lieu…). Touche la note d'une offre pour voir pourquoi.";
+      }
     }
 
     $("s-aide").textContent = AIDES[vue];
@@ -568,9 +719,16 @@ var SITE = {
     "Astuce : une offre retirée par le bot reste dans tes listes, avec l'étiquette « Plus en ligne ».",
     "Astuce : en bas de page, « Sauvegarder » crée un fichier de tes choix, à réimporter sur un autre appareil.",
     "Astuce : dans « Postulé », le bouton « Rappel agenda » ajoute la relance à J+10 dans ton calendrier.",
-    "Astuce : la recherche fouille aussi dans tes notes."
+    "Astuce : la recherche fouille aussi dans tes notes.",
+    "Astuce : la note /10 combine le contrat (3), le poste (3), tes outils (2), le lieu (1) et le niveau demandé (1), plus le début et le domaine."
   ];
   var astuce = -1, messagePrincipal = "";
+  function meilleurePiste() {
+    if (!SITE.compat) return null;
+    var l = offres.filter(function (o) { return statut(o) === "trier"; }).sort(function (a, b) { return compatFine(b) - compatFine(a); });
+    var o = l[0];
+    return o ? "Ta meilleure piste du moment : « " + o.titre + " » chez " + o.entreprise + ", " + fmtNote(compatibilite(o)) + "/10." : null;
+  }
   function bulle(compte) {
     var relances = offres.filter(aRelancer).length;
     var nouvATrier = offres.filter(function (o) { return nouvelles[o.url] && statut(o) === "trier"; }).length;
@@ -578,7 +736,8 @@ var SITE = {
     if (!offres.length)
       txt = T.aucune;
     else if (premiereVisite && !compte.interesse && !compte.postule && !compte.ecarte)
-      txt = T.bonjour(pluriel(offres.length, T.des.replace(/s$/, "")));
+      txt = SITE.compat ? T.bonjourCompat(offres.length, offres.filter(function (o) { return signauxOffre(o).contrat === "alternance"; }).length)
+        : T.bonjour(pluriel(offres.length, T.des.replace(/s$/, "")));
     else if (nouvATrier)
       txt = nouvATrier + " " + (nouvATrier > 1 ? T.nouvP : T.nouv) + " depuis ta visite du " + jour(visitePrecedente) + " ! " + (nouvATrier > 1 ? (T.f ? "Elles sont" : "Ils sont") : (T.f ? "Elle est" : "Il est")) + " en haut de « À trier ».";
     else if (relances)
@@ -602,8 +761,9 @@ var SITE = {
     robot.setAttribute("role", "button"); robot.tabIndex = 0;
     robot.setAttribute("aria-label", "Une astuce du robot");
     var parle = function () {
-      astuce = (astuce + 1) % (ASTUCES.length + 1);
-      parler(astuce === ASTUCES.length ? messagePrincipal : ASTUCES[astuce]);
+      var liste = meilleurePiste() ? [meilleurePiste()].concat(ASTUCES) : ASTUCES;
+      astuce = (astuce + 1) % (liste.length + 1);
+      parler(astuce === liste.length ? messagePrincipal : liste[astuce]);
       if (!calme) { robot.classList.remove("saute"); void robot.offsetWidth; robot.classList.add("saute"); }
     };
     robot.addEventListener("click", parle);
@@ -770,6 +930,22 @@ var SITE = {
       try { localStorage.setItem("theme:" + SITE.cle, t); } catch (e) { /* tant pis */ }
       majTheme();
     });
+  }
+
+  // avancée du bootcamp : chargée en arrière-plan, la page s'affiche sans l'attendre
+  if (SITE.bootcamp) {
+    fetch(SITE.bootcamp.url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw r.status; return r.json(); }).then(function (b) {
+      BOOT = window.BOOTCAMP = b;
+      offres.forEach(function (o) { delete o._c; });   // la note dépend de l'avancée du bootcamp
+      var enCours = b.competences.filter(function (c) { return c.etat === "en cours"; }).map(function (c) { return c.nom + " (" + c.pct + " %)"; });
+      ASTUCES.unshift("Ton bootcamp : " + b.pct + " % des notions acquises" + (enCours.length ? ", en cours : " + enCours.join(", ") : "")
+        + (b.en_cours && b.en_cours.notions.length ? ". Tu travailles " + b.en_cours.notions.join(", ") + "." : "."));
+      ASTUCES.push("Astuce : chaque offre affiche les outils demandés, en vert ceux que tu maîtrises, en couleur ceux du bootcamp en cours. Trie par « Compétences » pour voir les plus accessibles.");
+      afficher();
+    }).catch(function () { /* pas de bootcamp.json (page ouverte en local) : on s'en passe */ });
+  } else {
+    var opt = document.querySelector('#s-tri option[value="compat"]');
+    if (opt) opt.remove();
   }
 
   afficher();
