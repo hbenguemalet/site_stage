@@ -183,6 +183,8 @@
   .s-defile::-webkit-scrollbar{ display: none; }
   .s-groupe{ flex-wrap: nowrap; }
   .s-filtre{ white-space: nowrap; }
+  /* léger fondu à droite : indique que la rangée défile au doigt */
+  .s-defile{ -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
   .s-cherche{ flex-basis: 100%; }
 }
 @media (prefers-reduced-motion: reduce){ .s-act, .s-onglet{ transition: none; } }
