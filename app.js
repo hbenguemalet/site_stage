@@ -12,7 +12,7 @@
 var SITE = {
   cle: "stages-design:v1",
   nom: "stage",
-  criteres: [["lieu", "Lieu qui me convient"], ["dates", "Dates compatibles avec mon année"], ["missions", "Missions en lien avec mon DN MADE"]],
+  criteres: [["lieu", "Lieu qui me convient"], ["dates", "Dates : avril à août 2027, 16 semaines"], ["missions", "Missions en graphisme ou lignes éditoriales"]],
   villesDynamiques: false,
   typeLabels: { entreprise: "Entreprise", studio: "Studio · Agence", public: "Culture · Public" },
   typeEmployeur: function (o) {
@@ -36,8 +36,48 @@ var SITE = {
     trad.target = "_blank"; trad.rel = "noopener";
     return trad;
   },
+  // Note de compatibilité /10 entre chaque offre et le CV de Loréna (graphisme, lignes éditoriales,
+  // stage de 16 semaines d'avril à août 2027, à Lille ou ailleurs en France et en Europe).
+  compat: {
+    seuil: 5,
+    contratCible: "stage",
+    libCible: "un stage",
+    plafondHorsAlternance: 4,                  // un CDI / CDD / alternance ne peut pas dépasser cette note
+    plafondSenior: 3.5,                        // un poste confirmé / senior
+    plafondHorsData: 3.5,                      // poste hors graphisme / communication visuelle (plafonnée)
+    roles: { editorial: 3, graphisme: 3, communication: 2.2, illustration: 2, digital: 1.8, autre: 0.3 },
+    roleNoms: { editorial: "Poste en édition et lignes éditoriales", graphisme: "Poste de graphisme",
+      communication: "Poste en communication visuelle", illustration: "Poste d'illustration",
+      digital: "Poste de design digital", autre: "Poste hors graphisme" },
+    lieux: { lille: 1, paris: 0.9, autre: 0.85 },   // ouverte à l'étranger : ailleurs ne pénalise presque pas
+    debutCible: { mois: 4, an: 2027 },         // début visé : avril 2027
+    libDebut: "ton stage d'avril 2027",
+    txtDebutOk: "ça colle avec ton stage",
+    txtJunior: "Ouvert aux étudiants",
+    domainesProches: ["édition", "culture", "communication", "graphisme"],
+    // rôle, contrat et domaines lus dans le titre et l'intitulé de l'offre (le bot n'analyse que la data)
+    signaux: function (o) {
+      var t = o.titre || "", c = String(o.contrat || ""), tc = (t + " " + c).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(), ent = o.entreprise || "";
+      var contrat = /\bstag|intern|stagiaire|trainee|praktik|pr[aá]cticas|est[aá]gio|tirocinio|werkstudent/.test(tc) ? "stage"
+        : /alternan|apprenti/.test(tc) ? "alternance" : /\bcdd\b|temporaire|fixed/.test(tc) ? "cdd"
+        : /\bcdi\b|permanent|fulltime|full-time/.test(tc) ? "cdi" : "inconnu";
+      var role = /[eé]dition|[eé]ditorial|magazine|maquette|mise en page|livre|revue|typograph|publication/i.test(t) ? "editorial"
+        : /graphi|graphic|identit[ée] visuelle|print|supports? visuels?|designer/i.test(t) ? "graphisme"
+        : /communication|community|r[ée]seaux|social media|contenu|vid[ée]o|motion|montage|photo/i.test(t) ? "communication"
+        : /illustr|dessin|artist/i.test(t) ? "illustration"
+        : /\bux\b|\bui\b|digital|web design/i.test(t) ? "digital" : "autre";
+      var niveau = /senior|confirm|lead|manager|exp[ée]riment/i.test(t) ? "senior" : /junior|d[ée]butant|stagiaire|stage/i.test(t) ? "junior" : "";
+      var domaines = [];
+      if (/[eé]dition|[eé]ditorial|magazine|livre|revue|presse/i.test(t + " " + ent)) domaines.push("édition");
+      if (/culture|mus[ée]e|festival|cin[ée]ma|th[ée][âa]tre|galerie|patrimoine|biblioth|mucem|louvre/i.test(t + " " + ent)) domaines.push("culture");
+      if (/communication|marketing|r[ée]seaux/i.test(t)) domaines.push("communication");
+      if (/graphi|design/i.test(t)) domaines.push("graphisme");
+      return { contrat: contrat, role: role, niveau: niveau, domaines: domaines };
+    }
+  },
   objectifDefaut: 3,
   textes: {
+    bonjourCompat: function (n, k) { return "Salut ! J'ai repéré " + n + " offres en graphisme et culture, dont " + k + " stage" + (k > 1 ? "s" : "") + " pour ton CV. Je les ai toutes notées sur 10 d'après ton profil : les plus compatibles sont en haut. Touche une note pour voir pourquoi."; },
     des: "stages", nouv: "nouveau stage", nouvP: "nouveaux stages", f: false,
     bonjour: function (n) { return "Salut ! J'ai repéré " + n + " en design, graphisme, mode et culture, en France et en Europe. Pense à vérifier les dates avant de postuler !"; },
     aucune: "Salut ! Je n'ai pas encore trouvé de stage pour toi. Je te préviens dès qu'un arrive.",
@@ -174,6 +214,7 @@ var SITE = {
   }
   // signaux que le bot publie ; secours simple si la page est plus récente que offres.js
   function signauxOffre(o) {
+    if (SITE.compat && SITE.compat.signaux) return SITE.compat.signaux(o);
     if (o.signaux) return o.signaux;
     var c = String(o.contrat || "").toLowerCase();
     return { contrat: /alternan|apprenti/.test(c + " " + norm(o.titre)) ? "alternance" : /cdd/.test(c) ? "cdd" : "cdi", role: "data",
@@ -187,13 +228,13 @@ var SITE = {
     function raison(signe, t) { r.push({ s: signe, t: t }); }
 
     // contrat (3)
-    var alt = sg.contrat === "alternance";
-    if (alt) { pts += 3; raison(1, "Alternance : c'est ce que tu cherches"); }
+    var cible = C.contratCible || "alternance", alt = sg.contrat === cible;
+    if (alt) { pts += 3; raison(1, "Type de contrat recherché : " + C.libCible); }
     else if (sg.contrat === "inconnu") { pts += 1.5; raison(0, "Type de contrat non précisé"); }
     else {
       pts += 0.4; plafond = C.plafondHorsAlternance;
-      plafondRaison = (sg.contrat || "cdi").toUpperCase() + " : tu cherches une alternance (plafonné à " + C.plafondHorsAlternance + "/10)";
-      raison(-1, (sg.contrat === "stage" ? "Stage" : sg.contrat.toUpperCase()) + " : pas une alternance");
+      plafondRaison = (sg.contrat || "cdi").toUpperCase() + " : tu cherches " + C.libCible + " (plafonné à " + C.plafondHorsAlternance + "/10)";
+      raison(-1, (sg.contrat === "stage" ? "Stage" : sg.contrat.toUpperCase()) + " : pas " + C.libCible);
     }
     // poste (3)
     var rp = C.roles[sg.role] != null ? C.roles[sg.role] : 0.3;
@@ -209,11 +250,12 @@ var SITE = {
       pts += 0; plafond = Math.min(plafond, C.plafondSenior);
       raison(-1, "Poste confirmé / senior" + (sg.annees ? " (" + sg.annees + " ans d'expérience demandés)" : ""));
       plafondRaison = plafondRaison || "Poste senior (plafonné à " + C.plafondSenior + "/10)";
-    } else if (sg.niveau === "junior" || alt) { pts += 1; raison(1, "Accessible à un profil junior"); }
+    } else if (sg.niveau === "junior" || alt) { pts += 1; raison(1, C.txtJunior || "Accessible à un profil junior"); }
     else { pts += 0.6; raison(0, "Niveau d'expérience non précisé"); }
     // outils (2) : maîtrise actuelle (Excel…) + avancée du bootcamp
     var outils = outilsOffre(o);
-    if (outils.length) {
+    if (!SITE.bootcamp) { pts += 1.2; }
+    else if (outils.length) {
       var tot = 0, ok = [], cours = [], non = [];
       outils.forEach(function (n) {
         var e = etatOutil(n);
@@ -228,15 +270,15 @@ var SITE = {
     // lieu (1)
     var lv = o.ville === "lille" ? "lille" : o.ville === "paris" ? "paris" : "autre";
     pts += C.lieux[lv];
-    raison(lv === "lille" ? 1 : lv === "paris" ? 0 : -1, lv === "lille" ? "Métropole lilloise : à côté de chez toi" : lv === "paris" ? "Paris : déménagement à prévoir" : "Lieu éloigné");
+    raison(lv === "lille" ? 1 : 0, lv === "lille" ? "Lille : à côté de chez elle" : lv === "paris" ? "Paris : déménagement à prévoir" : "Ailleurs (France ou étranger) : ouverte à la mobilité");
     // début
     var d = debutOffre(o);
     if (d && C.debutCible) {
       var ecart = (d.an * 12 + (d.mois || C.debutCible.mois)) - (C.debutCible.an * 12 + C.debutCible.mois);
       var quand = (d.mois ? NOMS_MOIS[d.mois] + " " : "") + d.an;
-      if (ecart < -2) { pts -= 2; raison(-1, "Début en " + quand + " : trop tôt pour ta rentrée de " + NOMS_MOIS[C.debutCible.mois] + " " + C.debutCible.an); }
-      else if (ecart <= 2) { pts += 0.5; raison(1, "Début en " + quand + " : ça colle avec ta rentrée"); }
-      else { pts -= 0.5; raison(-1, "Début en " + quand + " : plus tard que ta rentrée"); }
+      if (ecart < -2) { pts -= 2; raison(-1, "Début en " + quand + " : trop tôt pour " + (C.libDebut || "ta rentrée de " + NOMS_MOIS[C.debutCible.mois] + " " + C.debutCible.an)); }
+      else if (ecart <= 2) { pts += 0.5; raison(1, "Début en " + quand + " : " + (C.txtDebutOk || "ça colle avec ta rentrée")); }
+      else { pts -= 0.5; raison(-1, "Début en " + quand + " : plus tard que prévu"); }
     }
     // domaine
     var proche = (sg.domaines || []).filter(function (x) { return C.domainesProches.indexOf(x) >= 0; });
@@ -736,7 +778,7 @@ var SITE = {
     if (!offres.length)
       txt = T.aucune;
     else if (premiereVisite && !compte.interesse && !compte.postule && !compte.ecarte)
-      txt = SITE.compat ? T.bonjourCompat(offres.length, offres.filter(function (o) { return signauxOffre(o).contrat === "alternance"; }).length)
+      txt = SITE.compat ? T.bonjourCompat(offres.length, offres.filter(function (o) { return signauxOffre(o).contrat === SITE.compat.contratCible; }).length)
         : T.bonjour(pluriel(offres.length, T.des.replace(/s$/, "")));
     else if (nouvATrier)
       txt = nouvATrier + " " + (nouvATrier > 1 ? T.nouvP : T.nouv) + " depuis ta visite du " + jour(visitePrecedente) + " ! " + (nouvATrier > 1 ? (T.f ? "Elles sont" : "Ils sont") : (T.f ? "Elle est" : "Il est")) + " en haut de « À trier ».";
@@ -944,7 +986,7 @@ var SITE = {
       afficher();
     }).catch(function () { /* pas de bootcamp.json (page ouverte en local) : on s'en passe */ });
   } else {
-    var opt = document.querySelector('#s-tri option[value="compat"]');
+    var opt = document.querySelector('#s-tri option[value="competences"]');   // ancien libellé, plus utilisé
     if (opt) opt.remove();
   }
 
