@@ -18,7 +18,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -37,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -56,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -75,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -94,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -113,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -151,7 +151,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -233,6 +233,25 @@ window.STAGES = {
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
+   "titre": "stage Assistant(e) communication et événementiel H/F - max 44 jours",
+   "entreprise": "Theatre moderne",
+   "lieu": "Lille (59)",
+   "url": "https://fr.indeed.com/viewjob?jk=58e6d5d0089d6479",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 30,
+   "vu": "2026-11-25T17:10:41+00:00",
+   "premiere": "2026-11-25T17:10:41+00:00"
+  },
+  {
    "titre": "Assistant Contrôleur de Gestion - Stage H/F",
    "entreprise": "La Redoute",
    "lieu": "Roubaix (59)",
@@ -248,7 +267,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -267,7 +286,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -286,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -305,7 +324,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -324,7 +343,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -343,7 +362,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T16:28:01+00:00",
+   "vu": "2026-11-25T17:10:41+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
