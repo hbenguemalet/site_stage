@@ -1,6 +1,6 @@
 /* Généré par le bot d'offres (profil stage-design) — ne pas modifier à la main. */
 window.STAGES = {
- "date": "2026-11-24",
+ "date": "2026-11-25",
  "meilleures": [
   {
    "titre": "Stage - Graphisme / Graphic designer / Graphiste",
@@ -18,7 +18,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -37,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -56,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -75,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -94,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -113,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -151,7 +151,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -189,7 +189,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -208,7 +208,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -233,6 +233,44 @@ window.STAGES = {
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
+   "titre": "Assistant Contrôleur de Gestion - Stage H/F",
+   "entreprise": "La Redoute",
+   "lieu": "Roubaix (59)",
+   "url": "https://fr.indeed.com/viewjob?jk=ea0bfa4413dd7396",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 30,
+   "vu": "2026-11-25T02:29:39+00:00",
+   "premiere": "2026-11-25T02:29:39+00:00"
+  },
+  {
+   "titre": "Stage - Assistant.e chef.fe de projet développement & conception de lieux de travail HOWEL - 6 mois",
+   "entreprise": "Aventim",
+   "lieu": "Wasquehal (59)",
+   "url": "https://fr.indeed.com/viewjob?jk=974c00c777ce5f0b",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 30,
+   "vu": "2026-11-25T02:29:39+00:00",
+   "premiere": "2026-11-25T02:29:39+00:00"
+  },
+  {
    "titre": "Stage assistant administratif H/F",
    "entreprise": "Axeo Services Lille Nord",
    "lieu": "Lille (59)",
@@ -248,7 +286,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -267,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-22T19:40:23+00:00"
   },
   {
@@ -286,7 +324,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -305,7 +343,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-24T17:45:07+00:00",
+   "vu": "2026-11-25T02:29:39+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
