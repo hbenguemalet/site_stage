@@ -46,3 +46,23 @@ body{ margin: 0; font-family: var(--a-font); color: var(--a-ink); background: va
 .a-chip--good{ color: #26683d; background: #e7f5ea; box-shadow: inset 0 0 0 1px #b3dcbd; }
 .a-chip--warn{ color: #8a5a17; background: #fcf1de; box-shadow: inset 0 0 0 1px #ecd0a0; }
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+/* thème sombre (bouton ☾ en haut à droite, ou réglage du téléphone) */
+html[data-theme="dark"]{
+  --a-bg: #1a1517;
+  --a-bg-bot: #24161d;
+  --a-frame-edge: #3d2f35;
+  --a-ink: #c9b9c0;
+  --a-ink-strong: #f6edf0;
+  --a-ink-soft: #95848c;
+  --a-accent: #c2637f;
+  --a-accent-deep: #a8506a;
+  --a-accent-soft: #e39ab0;
+  --a-accent-pale: #351f28;
+  --a-good: #3fa060;
+  --a-bad: #d4584c;
+  --a-lift: 0 1px 3px rgba(0,0,0,.4);
+  --a-lift-hi: 0 6px 18px rgba(0,0,0,.5);
+}
+html[data-theme="dark"] .a-screen{ background: linear-gradient(180deg, #1f191b 0%, var(--a-bg) 50%, var(--a-bg-bot) 100%); background-attachment: fixed; }
+html[data-theme="dark"] .a-chip{ color: var(--a-accent-soft); }

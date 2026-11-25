@@ -1,19 +1,62 @@
 /* Mes stages — page perso
    Affiche window.STAGES (offres.js, généré par le bot d'offres) comme une boîte de
-   réception : chaque offre a un statut (à trier, m'intéresse, postulé, écartée),
-   une vérification des 3 critères (rythme, début, missions data) et une note.
-   Tout est gardé sur l'appareil (localStorage) ; la page marche aussi sans.
-   Aucune dépendance. */
+   réception : chaque offre a un statut (à trier, gardée, postulé, écartée), une
+   vérification des critères, une note, et un suivi de candidature (relance,
+   entretien, réponse). Tout est gardé sur l'appareil (localStorage), exportable.
+   Aucune dépendance.
+
+   Le haut du fichier (SITE) est propre à ce site ; le moteur en dessous est le même
+   que celui de la page des alternances. */
+
+/* =================== réglages propres à ce site =================== */
+var SITE = {
+  cle: "stages-design:v1",
+  nom: "stage",
+  criteres: [["lieu", "Lieu qui me convient"], ["dates", "Dates compatibles avec mon année"], ["missions", "Missions en lien avec mon DN MADE"]],
+  villesDynamiques: false,
+  typeLabels: { entreprise: "Entreprise", studio: "Studio · Agence", public: "Culture · Public" },
+  typeEmployeur: function (o) {
+    if (/minist|mairie|ville de |r[ée]gion|d[ée]partement|universit|mus[ée]e|th[ée][âa]tre|op[ée]ra|biblioth|fondation|centre (national|culturel|pompidou)|palais|galerie|festival|cin[ée]math|archives|monuments|\bcnap\b|\bcnc\b|\bbnf\b|\bmucem\b|\blouvre\b|mobilier national|manufacture|p[ôo]le emploi|france travail|m[ée]tropole|collectivit/i.test(o.entreprise)) return "public";
+    if (/studio|agence|agency|atelier|design|cr[ée]atif|creative|branding|graphi|print|[ée]dition|editions|motion|architect|maison d|label|collectif|label/i.test(o.entreprise)) return "studio";
+    return "entreprise";
+  },
+  ville: function (o) {
+    if (/lille|roubaix|tourcoing|villeneuve|marcq|croix|lomme|ronchin|wasquehal|lambersart|loos|seclin|madeleine|\b59\b/i.test(o.lieu)) return ["lille", "Lille"];
+    if (/paris|\b75\b|\b92\b|\b93\b|\b94\b|la d[ée]fense|montreuil|saint-denis|boulogne|issy|levallois|ivry|pantin|clichy/i.test(o.lieu)) return ["paris", "Paris"];
+    return ["ailleurs", "Ailleurs · Europe"];
+  },
+  contrat: null,
+  etoile: null,
+  actionGardee: null,
+  // annonces à l'étranger ou en anglais : lien de traduction
+  actionToujours: function (o, el) {
+    if (o.ville !== "ailleurs" && !/\b(intern(ship)?|trainee|praktik\w*|pr[aá]cticas|est[aá]gio|tirocinio|stagiair\w*|werkstudent|graphic|designer|assistant|manager)\b/i.test(o.titre)) return null;
+    var trad = el("a", "s-act s-act--voir", "Traduire en français");
+    trad.href = "https://translate.google.com/translate?sl=auto&tl=fr&u=" + encodeURIComponent(o.url);
+    trad.target = "_blank"; trad.rel = "noopener";
+    return trad;
+  },
+  objectifDefaut: 3,
+  textes: {
+    des: "stages", nouv: "nouveau stage", nouvP: "nouveaux stages", f: false,
+    bonjour: function (n) { return "Salut ! J'ai repéré " + n + " en design, graphisme, mode et culture, en France et en Europe. Pense à vérifier les dates avant de postuler !"; },
+    aucune: "Salut ! Je n'ai pas encore trouvé de stage pour toi. Je te préviens dès qu'un arrive.",
+    gardees: "vérifie le lieu, les dates et les missions.",
+    relanceObjet: "Candidature de stage"
+  }
+};
+
+/* =================== moteur (identique sur les deux sites) =================== */
 (function () {
   "use strict";
 
   var DATA = window.STAGES || { meilleures: [], autres: [], liens: [] };
-  var CLE = "stages-design:v1";
-  var CRITERES = [["lieu", "Lieu qui me convient"], ["dates", "Dates compatibles avec mon année"], ["missions", "Missions en lien avec mon DN MADE"]];
+  var T = SITE.textes;
+  var JOUR = 24 * 3600 * 1000, DIX_JOURS = 10 * JOUR;
   var AIDES = {
-    trier: "Ouvre l'annonce, puis garde-la avec « Je garde » ou écarte-la avec ✕.",
-    interesse: "Vérifie les 3 critères dans l'annonce, puis appuie sur « J'ai postulé ».",
-    postule: "Tes candidatures, de la plus récente à la plus ancienne.",
+    trier: "Ouvre l'annonce, puis garde-la avec « Je garde » ou écarte-la avec ✕. Sur téléphone : glisse vers la droite pour garder, vers la gauche pour écarter.",
+    interesse: "Vérifie les critères dans l'annonce, puis appuie sur « J'ai postulé ».",
+    postule: "Tes candidatures, de la plus récente à la plus ancienne. Note chaque étape : relance, entretien, réponse.",
     ecarte: "Les offres que tu as écartées. Tu peux en remettre une à trier."
   };
   var VIDES = {
@@ -23,31 +66,56 @@
     ecarte: ["Rien d'écarté", ""]
   };
 
+  // ---------- petits outils ----------
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function norm(s) { return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  function pluriel(n, mot) { return n + " " + mot + (n > 1 ? "s" : ""); }
+  function jour(iso) { return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }); }
+  function accord(n, m, f) { return n > 1 ? (f ? m + "es" : m + "s") : (f ? m + "e" : m); }
+  var calme = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   // ---------- mémoire de l'appareil ----------
-  var memo = { statuts: {}, verif: {}, notes: {}, connues: null, derniere: null, refConnues: null, refDate: null };
+  var memo = { statuts: {}, verif: {}, notes: {}, fiches: {}, vues: {}, prefs: {}, connues: null, derniere: null, refConnues: null, refDate: null };
   try {
-    var lu = JSON.parse(localStorage.getItem(CLE) || "null");
+    var lu = JSON.parse(localStorage.getItem(SITE.cle) || "null");
     if (lu) memo = Object.assign(memo, lu);
   } catch (e) { /* navigation privée : on repart de zéro */ }
-  function sauver() { try { localStorage.setItem(CLE, JSON.stringify(memo)); } catch (e) { /* tant pis */ } }
+  function sauver() { try { localStorage.setItem(SITE.cle, JSON.stringify(memo)); } catch (e) { /* tant pis */ } }
+  var prefs = memo.prefs;
+  if (!prefs.objectif) prefs.objectif = SITE.objectifDefaut;
+  if (!prefs.tri) prefs.tri = "pertinence";
 
   // ---------- les offres ----------
-  var RX_PUBLIC = /minist|mairie|ville de |r[ée]gion|d[ée]partement|universit|mus[ée]e|th[ée][âa]tre|op[ée]ra|biblioth|fondation|centre (national|culturel|pompidou)|palais|galerie|festival|cin[ée]math|archives|monuments|\bcnap\b|\bcnc\b|\bbnf\b|\bmucem\b|\blouvre\b|mobilier national|manufacture|p[ôo]le emploi|france travail|m[ée]tropole|collectivit/i;
-  var RX_ESN = /studio|agence|agency|atelier|design|cr[ée]atif|creative|branding|graphi|print|[ée]dition|editions|motion|architect|maison d|label|collectif|label/i;
-  function typeEmployeur(o) {
-    if (RX_PUBLIC.test(o.entreprise)) return "public";
-    if (RX_ESN.test(o.entreprise)) return "studio";
-    return "entreprise";
+  var NOMS_VILLES = {};
+  function preparer(o) {
+    o.type = SITE.typeEmployeur(o);
+    var v = SITE.ville(o);
+    o.ville = v[0] || norm(v[1]);
+    NOMS_VILLES[o.ville] = v[1];
+    if (SITE.contrat) o.contrat = SITE.contrat(o);
+    return o;
   }
-  function ville(o) {
-    if (/lille|roubaix|tourcoing|villeneuve|marcq|croix|lomme|ronchin|wasquehal|lambersart|loos|seclin|madeleine|\b59\b/i.test(o.lieu)) return "lille";
-    if (/paris|\b75\b|\b92\b|\b93\b|\b94\b|la d[ée]fense|montreuil|saint-denis|boulogne|issy|levallois|ivry|pantin|clichy/i.test(o.lieu)) return "paris";
-    return "ailleurs";
-  }
-  var offres = [];
+  var offres = [], parUrl = {};
   (DATA.meilleures || []).forEach(function (o) { offres.push(Object.assign({ proche: true }, o)); });
   (DATA.autres || []).forEach(function (o) { offres.push(Object.assign({ proche: false }, o)); });
-  offres.forEach(function (o) { o.type = typeEmployeur(o); o.ville = ville(o); });
+  offres.forEach(function (o) { preparer(o); parUrl[o.url] = o; });
+
+  // Une fiche courte de chaque offre suivie est gardée : quand le bot retire une
+  // annonce de sa liste, la candidature reste visible (avec « Plus en ligne »).
+  var CHAMPS_FICHE = ["titre", "entreprise", "lieu", "url", "contrat", "salaire", "site", "etoile", "infos", "premiere"];
+  function ficher(o) {
+    var f = {}; CHAMPS_FICHE.forEach(function (k) { if (o[k] != null) f[k] = o[k]; });
+    memo.fiches[o.url] = f;
+  }
+  Object.keys(memo.statuts).forEach(function (u) {
+    if (parUrl[u]) ficher(parUrl[u]);
+    else if (memo.fiches[u] && memo.statuts[u].s !== "ecarte") {
+      var o = preparer(Object.assign({ proche: true, disparue: true }, memo.fiches[u]));
+      offres.push(o); parUrl[u] = o;
+    }
+  });
+  Object.keys(memo.fiches).forEach(function (u) { if (!memo.statuts[u]) delete memo.fiches[u]; });
 
   // ---------- nouveautés depuis la dernière visite ----------
   // Une « visite » commence après 30 min d'absence : recharger la page ne fait pas
@@ -60,65 +128,120 @@
   var premiereVisite = !memo.refConnues;
   var connues = {}; (memo.refConnues || []).forEach(function (u) { connues[u] = 1; });
   var nouvelles = {};
-  if (!premiereVisite) offres.forEach(function (o) { if (!connues[o.url]) nouvelles[o.url] = 1; });
+  if (!premiereVisite) offres.forEach(function (o) { if (!o.disparue && !connues[o.url]) nouvelles[o.url] = 1; });
   var visitePrecedente = memo.refDate;
-  memo.connues = offres.map(function (o) { return o.url; });
+  memo.connues = offres.filter(function (o) { return !o.disparue; }).map(function (o) { return o.url; });
   memo.derniere = new Date(maintenant).toISOString();
   sauver();
 
   // ---------- état de l'écran ----------
-  var vue = "trier", filtre = { ville: "", type: "", rse: false, q: "" }, voirTout = false;
+  var vue = "trier", filtre = { ville: "", type: "", contrat: "", rse: false, q: "" }, voirTout = false;
+  var curseur = -1; // carte choisie au clavier
 
-  function $(id) { return document.getElementById(id); }
-  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function norm(s) { return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
-  function statut(o) { return (memo.statuts[o.url] || {}).s || "trier"; }
-  var DIX_JOURS = 10 * 24 * 3600 * 1000;
-  function aRelancer(o) { var i = memo.statuts[o.url]; return i && i.s === "postule" && i.d && Date.now() - Date.parse(i.d) > DIX_JOURS; }
-  function pluriel(n, mot) { return n + " " + mot + (n > 1 ? "s" : ""); }
-  function jour(iso) { return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }); }
+  function info(o) { return memo.statuts[o.url] || {}; }
+  function statut(o) { return info(o).s || "trier"; }
+  function aRelancer(o) {
+    var i = info(o);
+    if (i.s !== "postule" || i.reponse || i.entretien || !i.d) return false;
+    return Date.now() - Date.parse(i.relance || i.d) > DIX_JOURS;
+  }
+  function age(o) {
+    if (!o.premiere) return null;
+    var j = Math.floor((Date.now() - Date.parse(o.premiere)) / JOUR);
+    return j <= 0 ? "aujourd'hui" : j === 1 ? "hier" : "il y a " + j + " j";
+  }
 
   function passeFiltres(o) {
     if (filtre.ville && o.ville !== filtre.ville) return false;
     if (filtre.type && o.type !== filtre.type) return false;
+    if (filtre.contrat && o.contrat !== filtre.contrat) return false;
     if (filtre.rse && !o.etoile) return false;
     var q = norm(filtre.q);
-    return !q || norm(o.titre + " " + o.entreprise + " " + o.lieu).indexOf(q) >= 0;
+    return !q || norm(o.titre + " " + o.entreprise + " " + o.lieu + " " + (memo.notes[o.url] || "")).indexOf(q) >= 0;
   }
 
-  // ---------- changer le statut (avec « Annuler ») ----------
+  // ---------- retour visuel ----------
   var minuteur = null;
-  function changer(o, s, message) {
-    var avant = memo.statuts[o.url] ? Object.assign({}, memo.statuts[o.url]) : null;
-    if (s === "trier") delete memo.statuts[o.url];
-    else memo.statuts[o.url] = { s: s, d: new Date().toISOString() };
-    sauver(); afficher();
+  function toast(message, annuler) {
     $("s-toast-txt").textContent = message;
     $("s-toast").hidden = false;
-    $("s-toast-annuler").onclick = function () {
-      if (avant) memo.statuts[o.url] = avant; else delete memo.statuts[o.url];
-      sauver(); afficher(); $("s-toast").hidden = true;
-    };
+    $("s-toast-annuler").hidden = !annuler;
+    $("s-toast-annuler").onclick = function () { annuler(); $("s-toast").hidden = true; };
     clearTimeout(minuteur);
     minuteur = setTimeout(function () { $("s-toast").hidden = true; }, 5000);
   }
-
-  function bouton(cls, txt, fn) {
-    var b = el("button", "s-act " + cls, txt); b.type = "button"; b.addEventListener("click", fn); return b;
+  function confettis(depuis) {
+    if (calme) return;
+    var r = depuis ? depuis.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 2, width: 0, height: 0 };
+    var x = r.left + r.width / 2, y = r.top + r.height / 2;
+    var couleurs = ["var(--a-accent)", "var(--a-accent-soft)", "#f5b942", "#ef6f6c", "#5aa9e6", "#8fd18f"];
+    for (var i = 0; i < 28; i++) {
+      var c = el("i", "s-confetti");
+      var a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 110;
+      c.style.left = x + "px"; c.style.top = y + "px";
+      c.style.background = couleurs[i % couleurs.length];
+      c.style.setProperty("--dx", Math.cos(a) * d + "px");
+      c.style.setProperty("--dy", Math.sin(a) * d - 60 + "px");
+      c.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
+      document.body.appendChild(c);
+      setTimeout(function (n) { n.remove(); }.bind(null, c), 1100);
+    }
   }
 
-  // ---------- vérification des 3 critères + note ----------
+  // ---------- changer le statut (avec « Annuler ») ----------
+  // sens : "droite" / "gauche" = la carte glisse hors de la liste avant de partir
+  function changer(o, s, message, carteEl, sens) {
+    var avant = memo.statuts[o.url] ? Object.assign({}, memo.statuts[o.url]) : null;
+    function appliquer() {
+      if (s === "trier") delete memo.statuts[o.url];
+      else memo.statuts[o.url] = { s: s, d: new Date().toISOString() };
+      if (s !== "trier") ficher(o);
+      sauver(); afficher();
+      toast(message, function () {
+        if (avant) memo.statuts[o.url] = avant; else delete memo.statuts[o.url];
+        sauver(); afficher();
+      });
+    }
+    if (carteEl && !calme) {
+      carteEl.classList.add("sort-" + (sens || "droite"));
+      setTimeout(appliquer, 230);
+    } else appliquer();
+  }
+  // étapes d'une candidature : relance, entretien, réponse
+  function etape(o, cle, valeur, message) {
+    var i = memo.statuts[o.url]; if (!i) return;
+    var avant = Object.assign({}, i);
+    if (i[cle] && valeur === undefined) delete i[cle];
+    else i[cle] = valeur === undefined ? new Date().toISOString() : valeur;
+    if (cle === "reponse") i.reponseD = new Date().toISOString();
+    sauver(); afficher();
+    toast(message, function () { memo.statuts[o.url] = avant; sauver(); afficher(); });
+  }
+
+  function bouton(cls, txt, fn, aria) {
+    var b = el("button", "s-act " + cls, txt); b.type = "button"; b.addEventListener("click", fn);
+    if (aria) b.setAttribute("aria-label", aria);
+    return b;
+  }
+
+  // ---------- vérification des critères + note ----------
   function blocVerif(o) {
     var v = memo.verif[o.url] || (memo.verif[o.url] = {});
     var bloc = el("div", "s-verif");
-    bloc.appendChild(el("p", "s-verif-titre", "Dans l'annonce, j'ai vérifié :"));
+    var titre = el("p", "s-verif-titre", "Dans l'annonce, j'ai vérifié :");
+    var jauge = el("span", "s-jauge");
+    titre.appendChild(jauge);
+    bloc.appendChild(titre);
     var alerte = el("p", "s-alerte");
     function majAlerte() {
-      var non = CRITERES.filter(function (c) { return v[c[0]] === "non"; }).map(function (c) { return c[1].toLowerCase(); });
+      var non = SITE.criteres.filter(function (c) { return v[c[0]] === "non"; }).map(function (c) { return c[1].toLowerCase(); });
+      var oui = SITE.criteres.filter(function (c) { return v[c[0]] === "ok"; }).length;
       alerte.textContent = non.length ? "Ne colle pas : " + non.join(", ") + ". Tu peux l'écarter." : "";
       alerte.hidden = !non.length;
+      jauge.textContent = oui + " / " + SITE.criteres.length;
+      jauge.className = "s-jauge" + (oui === SITE.criteres.length ? " est-ok" : "");
     }
-    CRITERES.forEach(function (c) {
+    SITE.criteres.forEach(function (c) {
       var ligne = el("div", "s-critere");
       ligne.appendChild(el("span", null, c[1]));
       var tri = el("span", "s-tri"); tri.setAttribute("role", "group"); tri.setAttribute("aria-label", c[1]);
@@ -145,22 +268,115 @@
     return bloc;
   }
 
+  // ---------- suivi d'une candidature ----------
+  function rappelICS(o) {
+    var i = info(o);
+    var base = Date.parse(i.relance || i.d) || Date.now();
+    var d = new Date(base + DIX_JOURS);
+    function f(x) { return x.toISOString().slice(0, 10).replace(/-/g, ""); }
+    var ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//mes-offres//FR", "BEGIN:VEVENT",
+      "UID:" + Date.now() + "@mes-offres", "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
+      "DTSTART;VALUE=DATE:" + f(d), "DTEND;VALUE=DATE:" + f(new Date(d.getTime() + JOUR)),
+      "SUMMARY:Relancer " + (o.entreprise || "la candidature").replace(/[,;\n]/g, " "),
+      "DESCRIPTION:" + (o.titre + " — " + o.url).replace(/[,;]/g, " ").replace(/\n/g, " "),
+      "BEGIN:VALARM", "TRIGGER:PT9H", "ACTION:DISPLAY", "DESCRIPTION:Relance", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    telecharger("relance-" + norm(o.entreprise || "offre").replace(/[^a-z0-9]+/g, "-") + ".ics", ics, "text/calendar");
+  }
+  function mailRelance(o) {
+    var i = info(o);
+    var corps = "Bonjour,\n\nJe me permets de revenir vers vous au sujet de ma candidature au poste « " + o.titre + " »"
+      + (i.d ? ", envoyée le " + jour(i.d) : "") + ". Le poste m'intéresse toujours beaucoup et je reste disponible pour un échange "
+      + "si mon profil retient votre attention.\n\nBien cordialement,\n";
+    return "mailto:?subject=" + encodeURIComponent("Relance — " + T.relanceObjet + " · " + o.titre) + "&body=" + encodeURIComponent(corps);
+  }
+  function blocSuivi(o, li) {
+    var i = info(o);
+    var bloc = el("div", "s-suivi-cand");
+    var etapes = [["d", "Postulé"], ["relance", "Relancé"], ["entretien", "Entretien"], ["reponse", i.reponse === "non" ? "Refus" : "Réponse"]];
+    var frise = el("ol", "s-frise");
+    etapes.forEach(function (e) {
+      var fait = !!i[e[0]];
+      var pas = el("li", "s-pas" + (fait ? " est-fait" : "") + (e[0] === "reponse" && i.reponse ? (i.reponse === "oui" ? " est-oui" : " est-non") : ""));
+      pas.appendChild(el("span", "s-pas-pt"));
+      pas.appendChild(el("span", "s-pas-nom", e[1]));
+      var date = e[0] === "reponse" ? i.reponseD : i[e[0]];
+      if (fait && date) pas.appendChild(el("span", "s-pas-date", new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })));
+      frise.appendChild(pas);
+    });
+    bloc.appendChild(frise);
+
+    var acts = el("div", "s-mini-acts");
+    if (!i.reponse) {
+      acts.appendChild(bouton("s-act--mini" + (i.relance ? " est-on" : ""), i.relance ? "✓ Relancé" : "J'ai relancé", function () { etape(o, "relance", undefined, i.relance ? "Relance retirée" : "Relance notée. Prochain rappel dans 10 jours."); }));
+      acts.appendChild(bouton("s-act--mini" + (i.entretien ? " est-on" : ""), i.entretien ? "✓ Entretien" : "Entretien décroché", function (e) {
+        var avait = i.entretien;
+        etape(o, "entretien", undefined, avait ? "Entretien retiré" : "Un entretien, bravo ! Prépare-toi bien.");
+        if (!avait) confettis(e.target);
+      }));
+      acts.appendChild(bouton("s-act--mini s-act--oui", "Pris·e !", function (e) { etape(o, "reponse", "oui", "Félicitations !!"); confettis(e.target); confettis(li); }));
+      acts.appendChild(bouton("s-act--mini s-act--non", "Refus", function () { etape(o, "reponse", "non", "Dommage. Ce n'est que partie remise."); }));
+    } else {
+      acts.appendChild(bouton("s-act--mini", "Effacer la réponse", function () { var x = memo.statuts[o.url]; delete x.reponseD; etape(o, "reponse", undefined, "Réponse effacée"); }));
+    }
+    var mail = el("a", "s-act s-act--mini", "✉ Mail de relance"); mail.href = mailRelance(o);
+    acts.appendChild(mail);
+    if (!i.reponse) acts.appendChild(bouton("s-act--mini", "📅 Rappel agenda", function () { rappelICS(o); toast("Rappel de relance téléchargé : ouvre-le pour l'ajouter à ton agenda."); }));
+    bloc.appendChild(acts);
+    return bloc;
+  }
+
+  // ---------- surligner la recherche ----------
+  function surligner(parent, texte) {
+    var q = norm(filtre.q).trim();
+    if (!q) { parent.textContent = texte; return; }
+    // index du texte normalisé → index du texte d'origine (les accents se décomposent)
+    var n = "", carte = [];
+    for (var i = 0; i < texte.length; i++) {
+      var c = norm(texte[i]);
+      for (var k = 0; k < c.length; k++) { n += c[k]; carte.push(i); }
+    }
+    var pos = 0, idx;
+    parent.textContent = "";
+    while ((idx = n.indexOf(q, pos)) >= 0) {
+      var a = carte[idx], b = carte[idx + q.length - 1] + 1, debut = carte[pos] != null ? carte[pos] : texte.length;
+      if (a > debut) parent.appendChild(document.createTextNode(texte.slice(debut, a)));
+      parent.appendChild(el("mark", null, texte.slice(a, b)));
+      pos = idx + q.length;
+    }
+    var reste = carte[pos] != null ? carte[pos] : texte.length;
+    if (reste < texte.length) parent.appendChild(document.createTextNode(texte.slice(reste)));
+  }
+
   // ---------- une carte ----------
-  function carte(o) {
-    var s = statut(o);
-    var li = el("li", "s-offre" + (nouvelles[o.url] && s === "trier" ? " est-nouvelle" : ""));
+  function carte(o, rang) {
+    var s = statut(o), i = info(o);
+    var li = el("li", "s-offre" + (nouvelles[o.url] && s === "trier" ? " est-nouvelle" : "") + (o.disparue ? " est-disparue" : "") + (i.reponse === "oui" ? " est-gagnee" : ""));
+    li.tabIndex = -1;
+    li.dataset.url = o.url;
+    if (!calme) li.style.animationDelay = Math.min(rang, 8) * 35 + "ms";
     var tete = el("div", "s-tete");
+    if (aRelancer(o)) tete.appendChild(el("span", "a-chip a-chip--warn", "À relancer ?"));
     if (nouvelles[o.url]) tete.appendChild(el("span", "a-chip a-chip--good", "Nouveau"));
-    tete.appendChild(el("span", "a-chip", { entreprise: "Entreprise", studio: "Studio · Agence", public: "Culture · Public" }[o.type]));
+    if (o.disparue) tete.appendChild(el("span", "a-chip a-chip--warn", "Plus en ligne"));
+    if (SITE.contrat && o.contrat) tete.appendChild(el("span", "a-chip", SITE.contratLabels[o.contrat] || o.contrat));
+    if (o.etoile && SITE.etoile) tete.appendChild(el("span", "a-chip a-chip--good", SITE.etoile));
+    tete.appendChild(el("span", "a-chip", SITE.typeLabels[o.type]));
     if (o.salaire) tete.appendChild(el("span", "a-chip", o.salaire));
     if (o.note) tete.appendChild(el("span", "a-chip a-chip--warn", o.note));
+    var ag = age(o);
+    if (ag && s === "trier") tete.appendChild(el("span", "s-age", "repérée " + ag));
+    if (memo.vues[o.url]) tete.appendChild(el("span", "s-vue", "● déjà ouverte"));
     li.appendChild(tete);
 
     var bloc = el("div");
-    var h = el("h2", "s-titre"); var a = el("a", null, o.titre);
+    var h = el("h2", "s-titre"); var a = el("a");
+    surligner(a, o.titre);
     a.href = o.url; a.target = "_blank"; a.rel = "noopener"; h.appendChild(a);
     bloc.appendChild(h);
-    bloc.appendChild(el("p", "s-meta", [o.entreprise, o.lieu, o.site ? "via " + o.site : ""].filter(Boolean).join(" · ")));
+    var meta = el("p", "s-meta");
+    surligner(meta, [o.entreprise, o.lieu, o.site ? "via " + o.site : ""].filter(Boolean).join(" · "));
+    bloc.appendChild(meta);
     if (o.infos && o.infos.length) {
       var inf = el("p", "s-infos");
       o.infos.forEach(function (t) {
@@ -170,131 +386,391 @@
     }
     li.appendChild(bloc);
 
-    var info = memo.statuts[o.url];
-    if (s === "postule" && info && info.d) {
-      li.appendChild(el("p", "s-statut", "✓ Postulé le " + jour(info.d)));
-      if (aRelancer(o)) tete.insertBefore(el("span", "a-chip a-chip--warn", "À relancer ?"), tete.firstChild);
-    }
-    if (s === "postule" && info && !info.d) li.appendChild(el("p", "s-statut", "✓ Postulé"));
+    if (s === "postule") li.appendChild(blocSuivi(o, li));
     if (s === "interesse" || s === "postule") li.appendChild(blocVerif(o));
 
     var actions = el("div", "s-actions");
     var voir = el("a", "s-act s-act--voir", "Voir l'annonce ↗");
     voir.href = o.url; voir.target = "_blank"; voir.rel = "noopener";
     actions.appendChild(voir);
-    if (o.ville === "ailleurs" || /\b(intern(ship)?|trainee|praktik\w*|pr[aá]cticas|est[aá]gio|tirocinio|stagiair\w*|werkstudent|graphic|designer|assistant|manager)\b/i.test(o.titre)) {
-      var trad = el("a", "s-act s-act--voir", "Traduire en français");
-      trad.href = "https://translate.google.com/translate?sl=auto&tl=fr&u=" + encodeURIComponent(o.url);
-      trad.target = "_blank"; trad.rel = "noopener";
-      actions.appendChild(trad);
-    }
+    if (SITE.actionToujours) { var t = SITE.actionToujours(o, el); if (t) actions.appendChild(t); }
     if (s === "trier") {
-      actions.appendChild(bouton("s-act--oui", "♥ Je garde", function () { changer(o, "interesse", "Rangée dans « Gardées »"); }));
-      actions.appendChild(bouton("s-act--non", "✕", function () { changer(o, "ecarte", "Offre écartée"); }));
-      actions.lastChild.setAttribute("aria-label", "Pas pour moi");
+      actions.appendChild(bouton("s-act--oui", "♥ Je garde", function () { changer(o, "interesse", "Rangée dans « Gardées »", li, "droite"); }));
+      actions.appendChild(bouton("s-act--non", "✕", function () { changer(o, "ecarte", "Offre écartée", li, "gauche"); }, "Pas pour moi"));
     } else if (s === "interesse") {
-      actions.appendChild(bouton("s-act--postule", "J'ai postulé", function () { changer(o, "postule", "Bravo ! Rangée dans « Postulé »"); }));
-      actions.appendChild(bouton("s-act--non", "✕", function () { changer(o, "ecarte", "Offre écartée"); }));
-      actions.lastChild.setAttribute("aria-label", "Finalement pas pour moi");
+      if (SITE.actionGardee) actions.appendChild(SITE.actionGardee(o, el));
+      actions.appendChild(bouton("s-act--postule", "J'ai postulé", function (e) { confettis(e.target); changer(o, "postule", "Bravo ! Rangée dans « Postulé »", li, "droite"); }));
+      actions.appendChild(bouton("s-act--non", "✕", function () { changer(o, "ecarte", "Offre écartée", li, "gauche"); }, "Finalement pas pour moi"));
     } else if (s === "postule") {
-      actions.appendChild(bouton("", "Annuler la candidature", function () { changer(o, "interesse", "Remise dans « Gardées »"); }));
+      actions.appendChild(bouton("", "Annuler la candidature", function () { changer(o, "interesse", "Remise dans « Gardées »", li, "gauche"); }));
     } else {
-      actions.appendChild(bouton("", "Remettre à trier", function () { changer(o, "trier", "Remise dans « À trier »"); }));
+      actions.appendChild(bouton("", "Remettre à trier", function () { changer(o, "trier", "Remise dans « À trier »", li, "droite"); }));
     }
     li.appendChild(actions);
+    li.querySelectorAll('a[href^="http"]').forEach(function (x) {
+      if (x.href === o.url) x.addEventListener("click", function () { memo.vues[o.url] = 1; sauver(); });
+    });
+    if (s === "trier") glisser(li, o);
     return li;
   }
 
+  // ---------- glisser au doigt (À trier) ----------
+  function glisser(li, o) {
+    var x0 = null, y0 = 0, dx = 0, actif = false;
+    li.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "touch" || e.target.closest("button, a, textarea")) return;
+      x0 = e.clientX; y0 = e.clientY; dx = 0; actif = false;
+    });
+    li.addEventListener("pointermove", function (e) {
+      if (x0 == null) return;
+      dx = e.clientX - x0;
+      if (!actif && Math.abs(e.clientY - y0) > 14 && Math.abs(dx) < 14) { x0 = null; return; }
+      if (!actif && Math.abs(dx) > 14) { actif = true; li.setPointerCapture(e.pointerId); li.classList.add("est-glisse"); }
+      if (actif) {
+        li.style.transform = "translateX(" + dx + "px) rotate(" + dx / 40 + "deg)";
+        li.dataset.glisse = dx > 50 ? "oui" : dx < -50 ? "non" : "";
+      }
+    });
+    function fin() {
+      if (x0 == null) return;
+      x0 = null;
+      li.classList.remove("est-glisse");
+      if (actif && Math.abs(dx) > 90) {
+        if (dx > 0) changer(o, "interesse", "Rangée dans « Gardées »", li, "droite");
+        else changer(o, "ecarte", "Offre écartée", li, "gauche");
+      } else { li.style.transform = ""; li.dataset.glisse = ""; }
+      actif = false;
+    }
+    li.addEventListener("pointerup", fin);
+    li.addEventListener("pointercancel", fin);
+  }
+
+  // ---------- tableau de bord ----------
+  function lundi(t) { var d = new Date(t); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d.getTime(); }
+  function suivi(compte) {
+    var zone = $("s-suivi"); if (!zone) return;
+    var post = Object.keys(memo.statuts).map(function (u) { return memo.statuts[u]; }).filter(function (i) { return i.s === "postule"; });
+    var cetteSemaine = lundi(Date.now());
+    var semaine = post.filter(function (i) { return i.d && Date.parse(i.d) >= cetteSemaine; }).length;
+    var entretiens = post.filter(function (i) { return i.entretien; }).length;
+    var oui = post.filter(function (i) { return i.reponse === "oui"; }).length;
+    var obj = prefs.objectif;
+
+    // anneau de l'objectif de la semaine
+    var p = Math.min(1, semaine / obj), R = 34, C = 2 * Math.PI * R;
+    $("s-anneau-arc").style.strokeDasharray = C;
+    $("s-anneau-arc").style.strokeDashoffset = C * (1 - p);
+    $("s-anneau-n").textContent = semaine;
+    $("s-anneau-obj").textContent = "/ " + obj;
+    $("s-suivi").classList.toggle("est-atteint", semaine >= obj);
+    $("s-obj-txt").textContent = semaine >= obj ? "Objectif de la semaine atteint !" : "Encore " + pluriel(obj - semaine, "candidature") + " pour l'objectif de la semaine";
+
+    // entonnoir
+    var etapes = [["Repérées", offres.length], ["Retenues", compte.interesse + compte.postule], ["Postulé", compte.postule], ["Entretiens", entretiens], ["Pris·e", oui]];
+    var max = Math.max(1, offres.length);
+    var ent = $("s-entonnoir"); ent.textContent = "";
+    etapes.forEach(function (e) {
+      var ligne = el("div", "s-ent");
+      ligne.appendChild(el("span", "s-ent-nom", e[0]));
+      var barre = el("span", "s-ent-barre"); var plein = el("i");
+      plein.style.width = (e[1] ? Math.max(2, e[1] / max * 100) : 0) + "%";
+      barre.appendChild(plein); ligne.appendChild(barre);
+      ligne.appendChild(el("b", "s-ent-n", e[1]));
+      ent.appendChild(ligne);
+    });
+
+    // 8 dernières semaines
+    var hist = $("s-histo"); hist.textContent = "";
+    var sem = [];
+    for (var k = 7; k >= 0; k--) sem.push(cetteSemaine - k * 7 * JOUR);
+    var n = sem.map(function (deb) { return post.filter(function (i) { var t = Date.parse(i.d); return t >= deb && t < deb + 7 * JOUR; }).length; });
+    var hmax = Math.max(obj, Math.max.apply(null, n));
+    sem.forEach(function (deb, k) {
+      var col = el("div", "s-col" + (n[k] >= obj ? " est-ok" : ""));
+      var b = el("i"); b.style.height = Math.max(n[k] ? 6 : 2, n[k] / hmax * 100) + "%";
+      col.title = "Semaine du " + jour(deb) + " : " + pluriel(n[k], "candidature");
+      col.appendChild(el("span", "s-col-n", n[k] || ""));
+      col.appendChild(b);
+      col.appendChild(el("span", "s-col-j", new Date(deb).toLocaleDateString("fr-FR", { day: "numeric", month: "numeric" })));
+      hist.appendChild(col);
+    });
+    var ligneObj = el("span", "s-histo-obj"); ligneObj.style.bottom = "calc(" + (obj / hmax * 100) + "% * .78 + 18px)";
+    hist.appendChild(ligneObj);
+    // série de semaines qui atteignent l'objectif (la semaine en cours compte si elle est déjà atteinte)
+    var serie = 0;
+    for (var s2 = n.length - 1; s2 >= 0; s2--) { if (n[s2] >= obj) serie++; else if (s2 !== n.length - 1) break; }
+    $("s-serie").textContent = serie > 1 ? "🔥 " + serie + " semaines d'affilée à l'objectif" : "";
+  }
+
   // ---------- affichage ----------
+  var anciensComptes = {};
+  function trier(liste) {
+    if (vue === "trier") {
+      var t = prefs.tri;
+      liste.sort(function (a, b) {
+        if (t === "recentes") return String(b.premiere || "").localeCompare(String(a.premiere || "")) || (b.score || 0) - (a.score || 0);
+        if (t === "entreprise") return norm(a.entreprise).localeCompare(norm(b.entreprise));
+        return (nouvelles[b.url] ? 1 : 0) - (nouvelles[a.url] ? 1 : 0) || (b.proche ? 1 : 0) - (a.proche ? 1 : 0) || (b.score || 0) - (a.score || 0);
+      });
+    } else {
+      liste.sort(function (a, b) { return String(info(b).d).localeCompare(String(info(a).d)); });
+    }
+    return liste;
+  }
   function afficher() {
     var compte = { trier: 0, interesse: 0, postule: 0, ecarte: 0 };
     offres.forEach(function (o) { compte[statut(o)]++; });
-    Object.keys(compte).forEach(function (k) { $("n-" + k).textContent = compte[k]; });
+    Object.keys(compte).forEach(function (k) {
+      var c = $("n-" + k); c.textContent = compte[k];
+      if (anciensComptes[k] != null && anciensComptes[k] !== compte[k] && !calme) { c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); }
+      anciensComptes[k] = compte[k];
+    });
     bulle(compte);
+    suivi(compte);
 
-    var liste = offres.filter(function (o) { return statut(o) === vue && passeFiltres(o); });
-    if (vue === "trier") {
-      liste.sort(function (a, b) { return (nouvelles[b.url] ? 1 : 0) - (nouvelles[a.url] ? 1 : 0) || (b.proche ? 1 : 0) - (a.proche ? 1 : 0) || (b.score || 0) - (a.score || 0); });
-    } else {
-      liste.sort(function (a, b) { return String((memo.statuts[b.url] || {}).d).localeCompare(String((memo.statuts[a.url] || {}).d)); });
-    }
+    var liste = trier(offres.filter(function (o) { return statut(o) === vue && passeFiltres(o); }));
     var cachees = 0;
-    if (vue === "trier" && !voirTout) {
+    if (vue === "trier" && !voirTout && !filtre.q) {
       var visibles = liste.filter(function (o) { return o.proche || nouvelles[o.url]; });
       cachees = liste.length - visibles.length;
       liste = visibles;
     }
 
     $("s-aide").textContent = AIDES[vue];
+    $("s-tri-zone").hidden = vue !== "trier";
     var ol = $("s-liste"); ol.textContent = "";
     if (!liste.length) {
       var vide = el("li", "s-vide");
       var mini = el("img", "s-mini"); mini.src = "bot.svg"; mini.alt = ""; vide.appendChild(mini);
-      var filtres = filtre.ville || filtre.type || filtre.rse || filtre.q;
+      var filtres = filtre.ville || filtre.type || filtre.contrat || filtre.rse || filtre.q;
       vide.appendChild(el("strong", null, filtres ? "Aucune offre avec ces filtres" : VIDES[vue][0]));
       vide.appendChild(document.createTextNode(filtres ? "Enlève un filtre pour en voir plus." : VIDES[vue][1]));
+      if (filtres) {
+        var raz = el("button", "a-btn s-raz", "Enlever les filtres"); raz.type = "button";
+        raz.addEventListener("click", razFiltres);
+        vide.appendChild(raz);
+      }
       ol.appendChild(vide);
     }
-    liste.forEach(function (o) { ol.appendChild(carte(o)); });
+    liste.forEach(function (o, k) { ol.appendChild(carte(o, k)); });
+    curseur = Math.min(curseur, liste.length - 1);
+    marquerCurseur(false);
 
     $("s-plus").hidden = !cachees;
     $("s-plus-btn").textContent = "Voir " + cachees + " autre" + (cachees > 1 ? "s" : "") + " offre" + (cachees > 1 ? "s" : "");
   }
 
-  // ---------- en-tête, onglets, filtres ----------
-  // La bulle du robot : un seul message, le plus utile du moment.
+  // ---------- la bulle du robot ----------
+  // Un message principal, le plus utile du moment ; toucher le robot fait défiler des astuces.
+  var ASTUCES = [
+    "Astuce : touche « ? » sur ordinateur pour voir les raccourcis clavier (j / k pour naviguer, g pour garder, x pour écarter).",
+    "Astuce : sur téléphone, glisse une offre vers la droite pour la garder, vers la gauche pour l'écarter.",
+    "Astuce : une offre retirée par le bot reste dans tes listes, avec l'étiquette « Plus en ligne ».",
+    "Astuce : en bas de page, « Sauvegarder » crée un fichier de tes choix, à réimporter sur un autre appareil.",
+    "Astuce : dans « Postulé », le bouton « Rappel agenda » ajoute la relance à J+10 dans ton calendrier.",
+    "Astuce : la recherche fouille aussi dans tes notes."
+  ];
+  var astuce = -1, messagePrincipal = "";
   function bulle(compte) {
     var relances = offres.filter(aRelancer).length;
     var nouvATrier = offres.filter(function (o) { return nouvelles[o.url] && statut(o) === "trier"; }).length;
     var txt;
     if (!offres.length)
-      txt = "Salut ! Je n'ai pas encore trouvé de stage pour toi. Je te préviens dès qu'un arrive.";
+      txt = T.aucune;
     else if (premiereVisite && !compte.interesse && !compte.postule && !compte.ecarte)
-      txt = "Salut ! J'ai repéré " + pluriel(offres.length, "stage") + " en design, graphisme, mode et culture, en France et en Europe. Pense à vérifier les dates avant de postuler !";
+      txt = T.bonjour(pluriel(offres.length, T.des.replace(/s$/, "")));
     else if (nouvATrier)
-      txt = pluriel(nouvATrier, "nouveau stage") + " depuis ta visite du " + jour(visitePrecedente) + " ! Ils sont en haut de « À trier ».";
+      txt = nouvATrier + " " + (nouvATrier > 1 ? T.nouvP : T.nouv) + " depuis ta visite du " + jour(visitePrecedente) + " ! " + (nouvATrier > 1 ? (T.f ? "Elles sont" : "Ils sont") : (T.f ? "Elle est" : "Il est")) + " en haut de « À trier ».";
     else if (relances)
       txt = pluriel(relances, "candidature") + " envoyée" + (relances > 1 ? "s" : "") + " il y a plus de 10 jours. Un petit mail de relance ?";
     else if (compte.interesse)
-      txt = pluriel(compte.interesse, "offre") + " gardée" + (compte.interesse > 1 ? "s" : "") + " t'attend" + (compte.interesse > 1 ? "ent" : "") + " : vérifie le rythme, le début et les missions.";
+      txt = pluriel(compte.interesse, "offre") + " " + accord(compte.interesse, "gardé", true) + " t'attend" + (compte.interesse > 1 ? "ent" : "") + " : " + T.gardees;
     else if (compte.postule)
-      txt = "Déjà " + pluriel(compte.postule, "candidature") + ", bravo ! Je te préviens dès qu'un nouveau stage arrive.";
+      txt = "Déjà " + pluriel(compte.postule, "candidature") + ", bravo ! Je te préviens dès qu'" + (T.f ? "une " : "un ") + T.nouv + " arrive.";
     else if (compte.trier)
       txt = "Encore " + pluriel(compte.trier, "offre") + " à trier. Garde celles qui te plaisent, écarte les autres.";
     else
-      txt = "Tout est trié ! Je te préviens dès qu'un nouveau stage arrive.";
+      txt = "Tout est trié ! Je te préviens dès qu'" + (T.f ? "une " : "un ") + T.nouv + " arrive.";
+    if (txt !== messagePrincipal) { messagePrincipal = txt; astuce = -1; parler(txt); }
+  }
+  function parler(txt) {
     var b = $("s-bulle");
     if (b.textContent !== txt) { b.textContent = txt; b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; }
+  }
+  var robot = document.querySelector(".s-mii-cadre");
+  if (robot) {
+    robot.setAttribute("role", "button"); robot.tabIndex = 0;
+    robot.setAttribute("aria-label", "Une astuce du robot");
+    var parle = function () {
+      astuce = (astuce + 1) % (ASTUCES.length + 1);
+      parler(astuce === ASTUCES.length ? messagePrincipal : ASTUCES[astuce]);
+      if (!calme) { robot.classList.remove("saute"); void robot.offsetWidth; robot.classList.add("saute"); }
+    };
+    robot.addEventListener("click", parle);
+    robot.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); parle(); } });
   }
 
   if (DATA.date) $("s-maj").textContent = "Liste mise à jour le " + jour(DATA.date + "T12:00:00Z");
 
+  // ---------- onglets, filtres, tri ----------
+  function choisirVue(v) {
+    vue = v; curseur = -1;
+    document.querySelectorAll(".s-onglet").forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.vue === v); });
+    afficher();
+  }
   document.querySelectorAll(".s-onglet").forEach(function (b) {
-    b.addEventListener("click", function () {
-      vue = b.dataset.vue;
-      document.querySelectorAll(".s-onglet").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
-      afficher();
-    });
+    b.addEventListener("click", function () { choisirVue(b.dataset.vue); });
   });
   function groupe(attr) {
-    var boutons = document.querySelectorAll(".s-filtre[data-" + attr + "]");
-    boutons.forEach(function (b) {
-      b.addEventListener("click", function () {
-        filtre[attr] = b.dataset[attr];
-        boutons.forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
-        afficher();
-      });
+    var zone = document.querySelectorAll(".s-filtre[data-" + attr + "]");
+    if (!zone.length) return;
+    zone[0].parentNode.addEventListener("click", function (e) {
+      var b = e.target.closest(".s-filtre[data-" + attr + "]"); if (!b) return;
+      filtre[attr] = b.dataset[attr];
+      document.querySelectorAll(".s-filtre[data-" + attr + "]").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      afficher();
     });
   }
-  groupe("ville"); groupe("type");
-  $("s-cherche").addEventListener("input", function (e) { filtre.q = e.target.value; afficher(); });
+  function razFiltres() {
+    filtre = { ville: "", type: "", contrat: "", rse: false, q: "" };
+    $("s-cherche").value = "";
+    document.querySelectorAll(".s-filtre").forEach(function (x) {
+      var attr = ["ville", "type", "contrat"].filter(function (a) { return x.dataset[a] != null; })[0];
+      x.setAttribute("aria-pressed", attr ? x.dataset[attr] === "" : "false");
+    });
+    afficher();
+  }
+  // pastilles de ville construites d'après les offres, avec leur nombre
+  var comptes = {}, comptesContrat = {};
+  offres.forEach(function (o) { comptes[o.ville] = (comptes[o.ville] || 0) + 1; comptesContrat[o.contrat] = (comptesContrat[o.contrat] || 0) + 1; });
+  var zoneVilles = $("f-villes");
+  if (SITE.villesDynamiques && zoneVilles) {
+    Object.keys(comptes).sort(function (a, b) { return comptes[b] - comptes[a]; }).forEach(function (k) {
+      var b = el("button", "a-chip s-filtre", NOMS_VILLES[k] + " (" + comptes[k] + ")");
+      b.type = "button"; b.dataset.ville = k; b.setAttribute("aria-pressed", "false"); zoneVilles.appendChild(b);
+    });
+  } else {
+    document.querySelectorAll(".s-filtre[data-ville]").forEach(function (b) {
+      var k = b.dataset.ville; if (k) b.textContent += " (" + (comptes[k] || 0) + ")";
+    });
+  }
+  document.querySelectorAll(".s-filtre[data-contrat]").forEach(function (b) {
+    var k = b.dataset.contrat; b.textContent += " (" + (k ? (comptesContrat[k] || 0) : offres.length) + ")";
+  });
+  groupe("ville"); groupe("type"); groupe("contrat");
+  if ($("f-rse")) $("f-rse").addEventListener("click", function () { filtre.rse = !filtre.rse; this.setAttribute("aria-pressed", filtre.rse); afficher(); });
+  var attente;
+  $("s-cherche").addEventListener("input", function (e) { clearTimeout(attente); attente = setTimeout(function () { filtre.q = e.target.value; afficher(); }, 120); });
   $("s-plus-btn").addEventListener("click", function () { voirTout = true; afficher(); });
+  $("s-tri").value = prefs.tri;
+  $("s-tri").addEventListener("change", function () { prefs.tri = this.value; sauver(); afficher(); });
+
+  // objectif de la semaine
+  function objectif(d) { prefs.objectif = Math.max(1, Math.min(30, prefs.objectif + d)); sauver(); afficher(); }
+  $("s-obj-moins").addEventListener("click", function () { objectif(-1); });
+  $("s-obj-plus").addEventListener("click", function () { objectif(1); });
+  var details = $("s-suivi-details");
+  if (prefs.suiviOuvert) details.open = true;
+  details.addEventListener("toggle", function () { prefs.suiviOuvert = details.open; sauver(); });
 
   (DATA.liens || []).forEach(function (l) {
     var a = el("a", null, l[0]); a.href = l[2]; a.target = "_blank"; a.rel = "noopener";
     a.appendChild(el("small", null, l[1]));
     $("s-liens").appendChild(a);
   });
+
+  // ---------- clavier ----------
+  function cartes() { return Array.prototype.slice.call(document.querySelectorAll("#s-liste .s-offre")); }
+  function marquerCurseur(focus) {
+    cartes().forEach(function (c, k) { c.classList.toggle("est-choisie", k === curseur); });
+    var c = cartes()[curseur];
+    if (c && focus) { c.focus({ preventScroll: true }); c.scrollIntoView({ block: "center", behavior: calme ? "auto" : "smooth" }); }
+  }
+  function offreCurseur() { var c = cartes()[curseur]; return c ? parUrl[c.dataset.url] : null; }
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) {
+      if (e.key === "Escape") t.blur();
+      return;
+    }
+    var k = e.key, n = cartes().length, o, c;
+    if (k === "Escape") { $("s-aide-clavier").hidden = true; return; }
+    if (k === "?") { $("s-aide-clavier").hidden = !$("s-aide-clavier").hidden; return; }
+    if (k === "/") { e.preventDefault(); $("s-cherche").focus(); return; }
+    if (k >= "1" && k <= "4") { choisirVue(["trier", "interesse", "postule", "ecarte"][k - 1]); return; }
+    if (k === "j" || k === "ArrowDown" && curseur >= 0) { if (n) { e.preventDefault(); curseur = Math.min(n - 1, curseur + 1); marquerCurseur(true); } return; }
+    if (k === "k" || k === "ArrowUp" && curseur >= 0) { if (n) { e.preventDefault(); curseur = Math.max(0, curseur - 1); marquerCurseur(true); } return; }
+    o = offreCurseur(); c = cartes()[curseur];
+    if (!o) return;
+    var s = statut(o);
+    if (k === "o" || k === "Enter") { memo.vues[o.url] = 1; sauver(); window.open(o.url, "_blank", "noopener"); afficher(); }
+    else if (k === "g" && s === "trier") changer(o, "interesse", "Rangée dans « Gardées »", c, "droite");
+    else if (k === "x" && (s === "trier" || s === "interesse")) changer(o, "ecarte", "Offre écartée", c, "gauche");
+    else if (k === "p" && s === "interesse") { confettis(c); changer(o, "postule", "Bravo ! Rangée dans « Postulé »", c, "droite"); }
+    else if (k === "u" && s !== "trier") changer(o, s === "postule" ? "interesse" : "trier", "Remise en arrière", c, "gauche");
+  });
+  $("s-aide-clavier").addEventListener("click", function (e) { if (e.target === this || e.target.closest("button")) this.hidden = true; });
+  if ($("s-clavier-btn")) $("s-clavier-btn").addEventListener("click", function () { $("s-aide-clavier").hidden = false; });
+
+  // ---------- sauvegarde / import / CSV ----------
+  function telecharger(nom, contenu, type) {
+    var a = el("a"); a.download = nom;
+    a.href = URL.createObjectURL(new Blob([contenu], { type: type + ";charset=utf-8" }));
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  var aujourdhui = new Date().toISOString().slice(0, 10);
+  $("s-export").addEventListener("click", function () {
+    telecharger("mes-" + T.des + "-" + aujourdhui + ".json", JSON.stringify({ site: SITE.cle, date: aujourdhui, memo: memo }, null, 1), "application/json");
+    toast("Sauvegarde téléchargée. Importe-la sur un autre appareil pour retrouver tes choix.");
+  });
+  $("s-import").addEventListener("change", function () {
+    var f = this.files[0]; if (!f) return;
+    var lecteur = new FileReader();
+    lecteur.onload = function () {
+      try {
+        var d = JSON.parse(lecteur.result);
+        if (!d.memo || d.site !== SITE.cle) throw new Error("fichier");
+        ["statuts", "verif", "notes", "fiches", "vues"].forEach(function (k) { memo[k] = Object.assign({}, memo[k], d.memo[k] || {}); });
+        sauver();
+        toast("Choix importés : " + pluriel(Object.keys(d.memo.statuts || {}).length, "offre") + ". Rechargement…");
+        setTimeout(function () { location.reload(); }, 900);
+      } catch (e) { toast("Ce fichier n'est pas une sauvegarde de cette page."); }
+    };
+    lecteur.readAsText(f);
+    this.value = "";
+  });
+  $("s-csv").addEventListener("click", function () {
+    var lignes = [["Statut", "Offre", "Entreprise", "Lieu", "Postulé le", "Relancé le", "Entretien le", "Réponse", "Note", "Lien"]];
+    var noms = { interesse: "Gardée", postule: "Postulé", ecarte: "Écartée" };
+    function d(x) { return x ? new Date(x).toLocaleDateString("fr-FR") : ""; }
+    offres.filter(function (o) { var s = statut(o); return s === "interesse" || s === "postule"; }).forEach(function (o) {
+      var i = info(o);
+      lignes.push([noms[i.s], o.titre, o.entreprise, o.lieu, i.s === "postule" ? d(i.d) : "", d(i.relance), d(i.entretien), i.reponse === "oui" ? "Oui" : i.reponse === "non" ? "Non" : "", memo.notes[o.url] || "", o.url]);
+    });
+    var csv = lignes.map(function (l) { return l.map(function (c) { return '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"'; }).join(";"); }).join("\r\n");
+    telecharger("mes-candidatures-" + aujourdhui + ".csv", "﻿" + csv, "text/csv");
+  });
+
+  // ---------- thème clair / sombre ----------
+  var bTheme = $("s-theme");
+  function majTheme() {
+    var sombre = document.documentElement.dataset.theme === "dark";
+    bTheme.textContent = sombre ? "☀" : "☾";
+    bTheme.setAttribute("aria-label", sombre ? "Passer en thème clair" : "Passer en thème sombre");
+    var mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.content = getComputedStyle(document.documentElement).getPropertyValue("--a-bg").trim() || mc.content;
+  }
+  if (bTheme) {
+    majTheme();
+    bTheme.addEventListener("click", function () {
+      var t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = t;
+      try { localStorage.setItem("theme:" + SITE.cle, t); } catch (e) { /* tant pis */ }
+      majTheme();
+    });
+  }
 
   afficher();
 })();

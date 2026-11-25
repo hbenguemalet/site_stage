@@ -9,14 +9,19 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#eef4f7">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23b9687a'/><path d='M8 22V14M14 22V9M20 22V17M26 22V11' stroke='%23fff' stroke-width='3' stroke-linecap='round'/></svg>">
-<link rel="stylesheet" href="theme.css">
-<link rel="stylesheet" href="style.css?v=2">
+<script>try{var t=localStorage.getItem("theme:stages-design:v1");if(!t&&matchMedia("(prefers-color-scheme: dark)").matches)t="dark";if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="theme.css?v=4">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
 <div class="a-screen">
 
   <header class="a-header s-entete">
+    <div class="s-outils">
+      <button class="s-rond" id="s-clavier-btn" type="button" aria-label="Raccourcis clavier" title="Raccourcis clavier (?)">⌨</button>
+      <button class="s-rond" id="s-theme" type="button" aria-label="Changer de thème">☾</button>
+    </div>
     <h1 class="a-title">Mes stages · DN MADE</h1>
     <p class="a-lede">Design, graphisme, mode, espace, édition et culture, en France et en Europe : garde ceux qui te plaisent, écarte les autres.</p>
     <div class="s-guide">
@@ -26,6 +31,31 @@
   </header>
 
   <main class="a-main">
+
+    <section class="s-suivi" id="s-suivi" aria-label="Mon suivi">
+      <div class="s-suivi-haut">
+        <div class="s-anneau" aria-hidden="true">
+          <svg viewBox="0 0 80 80" width="80" height="80"><circle class="s-anneau-fond" cx="40" cy="40" r="34"/><circle class="s-anneau-arc" id="s-anneau-arc" cx="40" cy="40" r="34"/></svg>
+          <div class="s-anneau-txt"><b id="s-anneau-n">0</b><small id="s-anneau-obj">/ 5</small></div>
+        </div>
+        <div class="s-suivi-txt">
+          <p class="s-suivi-titre">Cette semaine</p>
+          <p class="s-obj-txt" id="s-obj-txt"></p>
+          <p class="s-serie" id="s-serie"></p>
+          <div class="s-obj-reglage">Objectif
+            <button type="button" class="s-rond s-rond--mini" id="s-obj-moins" aria-label="Baisser l'objectif">−</button>
+            <button type="button" class="s-rond s-rond--mini" id="s-obj-plus" aria-label="Monter l'objectif">+</button>
+          </div>
+        </div>
+      </div>
+      <details class="s-suivi-details" id="s-suivi-details">
+        <summary>Mes statistiques</summary>
+        <div class="s-stats">
+          <div><p class="s-stats-titre">De l'offre à la réponse</p><div class="s-entonnoir" id="s-entonnoir"></div></div>
+          <div><p class="s-stats-titre">Candidatures par semaine</p><div class="s-histo" id="s-histo"></div></div>
+        </div>
+      </details>
+    </section>
 
     <nav class="s-onglets" aria-label="Mes listes">
       <button class="s-onglet" data-vue="trier" aria-pressed="true">À trier <span class="s-compte" id="n-trier"></span></button>
@@ -52,7 +82,16 @@
       <input class="a-input s-cherche" id="s-cherche" type="search" placeholder="Chercher un mot…" aria-label="Chercher un mot dans les offres">
     </div>
 
-    <p class="s-aide" id="s-aide"></p>
+    <div class="s-barre">
+      <p class="s-aide" id="s-aide"></p>
+      <label class="s-tri-zone" id="s-tri-zone">Trier :
+        <select id="s-tri" class="s-select">
+          <option value="pertinence">Pertinence</option>
+          <option value="recentes">Plus récentes</option>
+          <option value="entreprise">Entreprise A → Z</option>
+        </select>
+      </label>
+    </div>
 
     <ol class="s-liste" id="s-liste"></ol>
 
@@ -69,7 +108,12 @@
   </main>
 
   <footer class="a-footer">
-    <span id="s-maj">Liste mise à jour récemment</span> · Tes choix restent sur cet appareil
+    <p><span id="s-maj">Liste mise à jour récemment</span> · Tes choix restent sur cet appareil</p>
+    <div class="s-sauve">
+      <button class="s-lien" id="s-export" type="button">⤓ Sauvegarder mes choix</button>
+      <label class="s-lien">⤒ Importer une sauvegarde<input type="file" id="s-import" accept="application/json,.json" hidden></label>
+      <button class="s-lien" id="s-csv" type="button">▦ Exporter mes candidatures (CSV)</button>
+    </div>
   </footer>
 
 </div>
@@ -79,7 +123,25 @@
   <button class="s-toast-btn" id="s-toast-annuler">Annuler</button>
 </div>
 
+<div class="s-modale" id="s-aide-clavier" hidden>
+  <div class="s-modale-in" role="dialog" aria-modal="true" aria-labelledby="s-clavier-titre">
+    <h2 class="s-h2" id="s-clavier-titre">Raccourcis clavier</h2>
+    <dl class="s-touches">
+      <dt><kbd>j</kbd> <kbd>k</kbd></dt><dd>Offre suivante / précédente</dd>
+      <dt><kbd>o</kbd></dt><dd>Ouvrir l'annonce</dd>
+      <dt><kbd>g</kbd></dt><dd>Je garde</dd>
+      <dt><kbd>x</kbd></dt><dd>Écarter</dd>
+      <dt><kbd>p</kbd></dt><dd>J'ai postulé (dans « Gardées »)</dd>
+      <dt><kbd>u</kbd></dt><dd>Remettre en arrière</dd>
+      <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>Changer d'onglet</dd>
+      <dt><kbd>/</kbd></dt><dd>Chercher</dd>
+      <dt><kbd>?</kbd></dt><dd>Afficher / cacher cette aide</dd>
+    </dl>
+    <button class="a-btn" type="button">Compris</button>
+  </div>
+</div>
+
 <script src="offres.js"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
