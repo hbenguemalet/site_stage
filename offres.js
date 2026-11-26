@@ -3,6 +3,25 @@ window.STAGES = {
  "date": "2026-11-26",
  "meilleures": [
   {
+   "titre": "Stagiaire content creator & motion design",
+   "entreprise": "Le Fridge Comedy Club",
+   "lieu": "Paris 2e (75)",
+   "url": "https://fr.indeed.com/viewjob?jk=ad086b757f7a1be6",
+   "etoile": true,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 80,
+   "vu": "2026-11-26T23:54:46+00:00",
+   "premiere": "2026-11-26T23:54:46+00:00"
+  },
+  {
    "titre": "Stage - Graphisme / Graphic designer / Graphiste",
    "entreprise": "Mangoo Pickle Asbl",
    "lieu": "Bruxelles",
@@ -18,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -56,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -75,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-25T22:21:19+00:00"
   },
   {
@@ -94,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -113,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,8 +151,27 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
+  },
+  {
+   "titre": "R&I Packaging Intern",
+   "entreprise": "Danone",
+   "lieu": "Barcelona, Barcelona provincia",
+   "url": "https://fr.indeed.com/viewjob?jk=e93adcf1a40465ad",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 60,
+   "vu": "2026-11-26T23:54:46+00:00",
+   "premiere": "2026-11-26T23:54:46+00:00"
   },
   {
    "titre": "Stage – Communication, Marketing digital et Création de contenu (H/F)",
@@ -151,7 +189,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -208,7 +246,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -227,7 +265,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -267,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-26T05:04:26+00:00"
   },
   {
@@ -286,7 +324,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-25T17:10:41+00:00"
   },
   {
@@ -305,7 +343,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -324,7 +362,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -343,7 +381,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -381,7 +419,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -400,7 +438,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-26T15:16:58+00:00",
+   "vu": "2026-11-26T23:54:46+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
