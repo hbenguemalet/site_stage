@@ -1,6 +1,6 @@
 /* Généré par le bot d'offres (profil stage-design) — ne pas modifier à la main. */
 window.STAGES = {
- "date": "2026-11-25",
+ "date": "2026-11-26",
  "meilleures": [
   {
    "titre": "Stage - Graphisme / Graphic designer / Graphiste",
@@ -18,7 +18,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -56,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -75,7 +75,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-25T22:21:19+00:00"
   },
   {
@@ -94,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -113,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -132,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 65,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -151,7 +151,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -208,7 +208,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-25T22:21:19+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -227,7 +227,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-25T22:21:19+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -252,6 +252,25 @@ window.STAGES = {
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
+   "titre": "Stage — Assistant(e) E-commerce & Webmarketing (H/F)",
+   "entreprise": "VALEGE LINGERIE",
+   "lieu": "Levallois-Perret (92)",
+   "url": "https://fr.indeed.com/pagead/clk/dl?mo=r&ad=-6NYlbfkN0CrajyamO12mVkSlDukuuPJgYp7_Wp8aL1o37cczkF4AxjUoQ4kgx2aZM7PTVjGSa0ktHhOvbUCBS2LB6R8I_HxZL8FBfsqrfW68UGjo3rf62B0iktDoWafMFWVVSOjSKpcMzgPAkIw3Fe-q2GbHqEc37A-EMjiEsXljkgx6Yu3xNH9m8yR7uufamYrIY9kIPtuBd_-rkrOJorRJ1F8v_yJV-xad5hYKZ0jeZTFLSx0PhyLQWZpD_HSk13E-_kkwSF1T7jPeFykuebQFqFH4CBEwcWORlJtnK57jRSVGud76MCqeFVMqrrr3uqfnQNcpuBrB0i3j61WreOB-SksWgJtdLk0s7PU8Pq98J9bwIa9qyvJOLzevldmT_QCGs3SmVmjn78FqqmjA1UGMOlgi9ZwMjdw2BGXnb0HwvMSpX4tMMcRKRyr-IW0l2LaGlybeySxa5V2U-LORrkxZCZXc6r7bM-xoBxQ_U58zYcZC4O0TtrPWbumnymb1Sjs3En6WfgrIrL896XY_nkEtpWpR4n5SksujBjGesDobUF8oYCD8gsM6YkrJTRPi8EywSV5KvOYJoo-GfsxrmYp4lvRJxeDJO89r9pQDXag16XVsvHH2g3Gflf8J_cuGCQxMtL9iWgo52OBvmVRUrZGzsDNpXiXEF_yER8W-cL5lkbb5gZxbAo3pfFhQEDvuP3t4SE5hY-hysR5RRxgIBIjj_geq_KQsMHO9Ij95y3P2z3KSFKJOKPbpX6VvfjSd1W8cQ3wArigth7BYLvCPP70qhvd7_atemk76ak-_YHPK7OGw0aDotvuCQOlzWBT_Y9TiFF_tWLmsfWVw9GVDzQPpX08p30OBX-BhyWRcsG5WlbyBu3cGQ%3D%3D&rm=2&xkcb=SoAW6_M2bE2cFnSDVp0KbzkdCdPP&jsa=5524&camk=aMELOn-zddMMdZkHEelGJg%3D%3D&tmtk=1k84v4pqtg5f3800&gdfvj=1&plid=indeed-jobalert&alid=6afefc2704a2d14154c9adf8&fvj=1&g1tAS=true",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 30,
+   "vu": "2026-11-26T05:04:26+00:00",
+   "premiere": "2026-11-26T05:04:26+00:00"
+  },
+  {
    "titre": "stage Assistant(e) communication et événementiel H/F - max 44 jours",
    "entreprise": "Theatre moderne",
    "lieu": "Lille (59)",
@@ -267,7 +286,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-25T17:10:41+00:00"
   },
   {
@@ -286,7 +305,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -305,7 +324,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -324,7 +343,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -362,7 +381,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
@@ -381,7 +400,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-25T22:32:57+00:00",
+   "vu": "2026-11-26T05:04:26+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
