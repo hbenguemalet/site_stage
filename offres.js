@@ -3,6 +3,25 @@ window.STAGES = {
  "date": "2026-11-28",
  "meilleures": [
   {
+   "titre": "Stagiaire designer ux-ui - télétravail",
+   "entreprise": "Safe",
+   "lieu": "Paris (75)",
+   "url": "https://fr.indeed.com/pagead/clk/dl?mo=r&ad=-6NYlbfkN0CuVGO3VQJZLPOFt3YlHptpNwJrxr6jjmb6h5xUCH_eQpzix6NAcdIGj3KcfRxqzG6yVqsZ3ZZGTkKTVw0L6DTYCWmw3mSUpyQbeRWLXMrH6q7TFkskmm2thz4XJtKGV_V_DM15f723HNglp7k3-_FHWuOf5I4lXBRFgtltcp6FAGeVU13B0wMunuSRpivSRJcqFI9I7VoAYBT7NWd1Hd0_rHyPFCV8XHixsNesIFk6Q5rsdYM-qOpT3DSMJD0tZMaUS5bUEfT73psFJ4butK98nzjqmrXffCknlLdbBCaRbdcFsSnch94irRiCHVenuHl_FdCB6rtLY0iODuxj4O36c9LW_Vp3dLmBWFIS5SFGcrmGAppor5umoiURxt6pEytc_u1E6oz4PTryib2410leIG3m73TubufEOgkyq3O-ngSvfYG3HOhDWqqOkyV0vcEqsGnOt1mginH-5Ttmyx-3WFBC015zTHxOxXPcMic29OUhEPpEEn6ygU4FlcAm54zwdc73tbFygB32EWXN4fPbiSkU6AhQmn24DVkR9_FCMrEwMPHH7zUYij7mFwzpLvuxOsklcmVt4rGO8O2byY6qNwZN2qZMXTYihte2Z5yqt4zPwtEcr1XtTVxC9SH957Y0RJDSU6FgFMplf5U-TBmmntV5hfXxXEeuqh0YxpQM2UOpO5wn3CXSM9lvABZQnbrl2HZMIqf0Jzk-_VROXvZEFskkRDZqHyq9tYKb1cOpJyYaHhlM_H86PmCES2RbcBcEEXYslYsB13_59VoJr7JalPw5Ly54vcktw_VnOFTInP0TYpdh7WUNqiuGQl-0buM5xeadl07WJ5wKyamVCtLIElWYN-ZEioX06K9cNoYQPeeYJafT7-bW&rm=2&xkcb=SoC16_M2bRuKFe2lXh0ObzkdCdPP&jsa=5591&camk=aMELOn-zddPbBsJFbUronA%3D%3D&tmtk=1k8hj1e2qieol800&gdfvj=1&plid=indeed-jobalert&alid=6afefc2704a2d14154c9adf8&fvj=1&g1tAS=true",
+   "etoile": true,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 80,
+   "vu": "2026-11-28T18:57:45+00:00",
+   "premiere": "2026-11-28T18:57:45+00:00"
+  },
+  {
    "titre": "Stagiaire content creator & motion design",
    "entreprise": "Le Fridge Comedy Club",
    "lieu": "Paris 2e (75)",
@@ -18,7 +37,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-26T23:54:46+00:00"
   },
   {
@@ -37,7 +56,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-23T21:25:27+00:00"
   },
   {
@@ -75,7 +94,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 80,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-21T17:32:49+00:00"
   },
   {
@@ -94,7 +113,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-25T22:21:19+00:00"
   },
   {
@@ -113,7 +132,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 75,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -155,6 +174,25 @@ window.STAGES = {
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
+   "titre": "Stage Janvier 2027 – Monteur Vidéo/Cadreur F/H",
+   "entreprise": "Atelier b Production",
+   "lieu": "Boulogne-Billancourt (92)",
+   "url": "https://fr.indeed.com/viewjob?jk=6f62e5df0d743713",
+   "etoile": false,
+   "salaire": "",
+   "site": "Indeed",
+   "pourquoi": [],
+   "note": null,
+   "infos": [
+    "Début : non précisé",
+    "Rythme : non précisé",
+    "Durée : non précisée"
+   ],
+   "score": 60,
+   "vu": "2026-11-28T18:57:45+00:00",
+   "premiere": "2026-11-28T18:57:45+00:00"
+  },
+  {
    "titre": "R&I Packaging Intern",
    "entreprise": "Danone",
    "lieu": "Barcelona, Barcelona provincia",
@@ -170,7 +208,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-26T23:54:46+00:00"
   },
   {
@@ -189,7 +227,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-24T17:45:07+00:00"
   },
   {
@@ -246,7 +284,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   },
   {
@@ -265,7 +303,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 60,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-18T21:47:49+00:00"
   }
  ],
@@ -324,7 +362,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-25T17:10:41+00:00"
   },
   {
@@ -343,7 +381,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-25T02:29:39+00:00"
   },
   {
@@ -419,7 +457,7 @@ window.STAGES = {
     "Durée : non précisée"
    ],
    "score": 30,
-   "vu": "2026-11-28T10:27:42+00:00",
+   "vu": "2026-11-28T18:57:45+00:00",
    "premiere": "2026-11-20T20:19:57+00:00"
   },
   {
